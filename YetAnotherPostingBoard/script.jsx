@@ -4,9 +4,7 @@ var MessageContainer = React.createClass({
         return (
             <div>
                 <div className="messageContainer">
-                    <Message text="Fefefwefefef  afa sf" />
-                    <Message text="hdfhdfghdfgdfg" />
-                    <Message text="sgrsrgrgsegergsrg" />
+                    <Message avatar="kuva/avatarph.png" text="Fefefwefefef  afa sf" />
                 </div>
             </div>
         );
@@ -19,7 +17,11 @@ var Message = React.createClass({
         return (
             <div>
                 <div className="message">
+                    <img className="avatar" src={this.props.avatar}></img>
                     <p className="text">{this.props.text}</p>
+                    <textbox>TimeNDate</textbox>
+                    <button>Edit</button>
+                    <button>Delete</button>
                 </div>
             </div>
         );
