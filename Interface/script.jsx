@@ -37,14 +37,14 @@ var MessageContainer = React.createClass({
 
 var MessageWriter = React.createClass({
     handleSend: function(event) {
-        this.props.sendMessage("Joitain");
+        this.props.sendMessage(this.refs.text.value);
     }, 
     
     render: function() {
         "use strict";
         return(
             <div className="messageWriter">
-                <textarea>Text here</textarea>
+                <textarea ref="text">Text here</textarea>
                 <div className="writerButtons">
                     <button onClick={this.handleSend}>Send</button>
                     <button>Clear</button>
@@ -64,7 +64,7 @@ var Topic = React.createClass({
             url: "SendMessage.php",
             method: "post",
             data: {msg: message},
-            dataType: "json",
+            dataType: "text",
             cache: false,
             success: this.getMessages,
             error: function(xhr, status, err) {
