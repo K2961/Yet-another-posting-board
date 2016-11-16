@@ -1,3 +1,7 @@
+.topic{
+    border: 0.063em solid black;
+    margin: 0.313em;
+}
 .message{
     border: 0.063em solid black;
 }
