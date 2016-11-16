@@ -11,7 +11,7 @@ function getAvatar($db, $userID)
     $avatar = "missing.png";
     while ($row = $statement->fetch(PDO::FETCH_ASSOC))
     {
-        $avatar = $row;
+        $avatar = $row["AvatarUrl"];
     }
     return $avatar;
 }
