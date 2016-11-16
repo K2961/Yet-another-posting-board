@@ -36,13 +36,17 @@ var MessageContainer = React.createClass({
 });
 
 var MessageWriter = React.createClass({
+    handleSend: function(event) {
+        this.props.sendMessage("Joitain");
+    }, 
+    
     render: function() {
         "use strict";
         return(
             <div className="messageWriter">
                 <textarea>Text here</textarea>
                 <div className="writerButtons">
-                    <button>Send</button>
+                    <button onClick={this.handleSend}>Send</button>
                     <button>Clear</button>
                 </div> 
             </div>
@@ -53,6 +57,20 @@ var MessageWriter = React.createClass({
 var Topic = React.createClass({
     getInitialState: function() {
         return {data: []};
+    },
+    
+    sendMessage: function(message) { 
+        $.ajax({
+            url: "SendMessage.php",
+            method: "post",
+            data: {msg: message},
+            dataType: "json",
+            cache: false,
+            success: this.getMessages,
+            error: function(xhr, status, err) {
+                console.error("ERROR: sendMessage: ", status, err.toString());
+            }
+        });
     },
     
     getMessages: function() {
@@ -80,7 +98,7 @@ var Topic = React.createClass({
         return (
             <div className="topic">
                 <h1>Test title</h1>
-                <MessageWriter />
+                <MessageWriter sendMessage={this.sendMessage}/>
                 <MessageContainer data={this.state.data} />
             </div>
         );

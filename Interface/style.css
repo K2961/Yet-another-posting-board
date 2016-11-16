@@ -22,7 +22,9 @@
     border: 0.063em solid black;
     margin: 0.313em;
 }
-.messageWriter textbox{
+.messageWriter textarea{
+    max-width: 20em;
+    max-height: 20em;
     float: left;
     border: 0.063em solid black;
 }
