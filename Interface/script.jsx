@@ -35,6 +35,20 @@ var MessageContainer = React.createClass({
     }
 });
 
+var MessageWriter = React.createClass({
+    render: function() {
+        "use strict";
+        return(
+            <div className="messageWriter">
+                <textarea>Text here</textarea>
+                <div className="writerButtons">
+                    <button>Send</button>
+                    <button>Clear</button>
+                </div> 
+            </div>
+        );
+    }
+})
 
 var Topic = React.createClass({
     getInitialState: function() {
@@ -66,11 +80,13 @@ var Topic = React.createClass({
         return (
             <div className="topic">
                 <h1>Test title</h1>
+                <MessageWriter />
                 <MessageContainer data={this.state.data} />
             </div>
         );
     }
 });
+
 
 ReactDOM.render(
     <Topic />,

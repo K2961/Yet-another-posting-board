@@ -1,7 +1,4 @@
-.topic{
-    border: 0.063em solid black;
-    margin: 0.313em;
-}
+
 .message{
     border: 0.063em solid black;
 }
@@ -18,5 +15,18 @@
 .messageButtons{
     clear: both;
     border-top: 0.063em solid black;
+    margin: 0.313em;
+}
+.topic{
+    padding: 0.313em;
+    border: 0.063em solid black;
+    margin: 0.313em;
+}
+.messageWriter textbox{
+    float: left;
+    border: 0.063em solid black;
+}
+.writerButtons{
+    clear: both;
     margin: 0.313em;
 }
