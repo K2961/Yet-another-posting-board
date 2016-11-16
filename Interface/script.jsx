@@ -65,6 +65,7 @@ var Topic = React.createClass({
     render: function() {
         return (
             <div className="topic">
+                <h1>Test title</h1>
                 <MessageContainer data={this.state.data} />
             </div>
         );
