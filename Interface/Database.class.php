@@ -13,9 +13,17 @@ class Database
         $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     }
     
-    function sendMessage($message)
+    function sendMessage($userId, $text)
     {
+        $query = <<<SQL
+        INSERT INTO Message(TopicId, UserId, Text, Posted)
+        VALUES (:userid, 1, :text, NOW());
+SQL;
         
+        $result = $this->pdo->prepare($query);
+        $result->bindValue(':userid', $userId, PDO::PARAM_INT);
+        $result->bindValue(':text', $text, PDO::PARAM_STR);
+        $result->execute();
     }
     
     function getMessages($topicID)
