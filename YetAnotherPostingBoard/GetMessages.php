@@ -1,9 +1,16 @@
 <?php
+require_once("/home/K1533/php_dbconfig/YAPB-DB-Init.php");
+$stmt = $db->query('SELECT * FROM Message');
+
 $messages = array();
-$messages[] = array("text" => "Tdfsdfsdljfasdklfj sdfl fjasfkl fjsdlasdfjksdfl", "avatar" => "kuva/avatarph.png");
-$messages[] = array("text" => "kgöflgk sdg ödfklg k ögweo jfe wwef e", "avatar" => "kuva/avatarph.png");
-$messages[] = array("text" => "efwkf wefko wekefp epw kowefp of", "avatar" => "kuva/avatarph.png");
-$messages[] = array("text" => "gergwfk wpef kweop kpwefo kpf", "avatar" => "kuva/avatarph.png");
+
+while($row = $stmt->fetch(PDO::FETCH_ASSOC)) 
+{
+    $messages[] = array (
+        "avatar" => "test.png",
+        "text" => $row["Text"]
+    );
+}
 
 $response = json_encode($messages);
 header('Content-type: application/json');
