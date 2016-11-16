@@ -4,14 +4,27 @@ require_once(DB_INIT_PATH);
 $db = new PDO("mysql:host=".DB_HOST.";dbname=".DB_NAME.";charset=utf8", DB_USER, DB_PASSWORD);
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-$stmt = $db->query('SELECT * FROM Message');
+
+function getAvatar($db, $userID)
+{
+    $statement = $db->query("SELECT AvatarUrl FROM User WHERE Id=$userID");
+    $avatar = "missing.png";
+    while ($row = $statement->fetch(PDO::FETCH_ASSOC))
+    {
+        $avatar = $row;
+    }
+    return $avatar;
+}
 
 $messages = array();
-
-while($row = $stmt->fetch(PDO::FETCH_ASSOC)) 
+$statement = $db->query('SELECT * FROM Message');
+while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
 {
+    $userId = $row["UserId"];
+    $avatar = getAvatar($db, $userId);
+    
     $messages[] = array (
-        "avatar" => "test.png",
+        "avatar" => $avatar,
         "text" => $row["Text"]
     );
 }
@@ -19,4 +32,3 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 $response = json_encode($messages);
 header('Content-type: application/json');
 echo $response;
-?>
