@@ -1,7 +1,18 @@
 .message{
-    border: 1px solid black;
+    border: 0.063em solid black;
 }
 .avatar{
-    width: 125px;
-    height: 125px;
+    float: left;
+    border: 0.063em solid black;
+    margin: 0.313em;
+    width: 7.813em;
+    height: 7.813em;
+}
+.text p{
+    float: right;
+}
+.messageButtons{
+    clear: both;
+    border-top: 0.063em solid black;
+    margin: 0.313em;
 }
