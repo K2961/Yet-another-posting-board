@@ -6,9 +6,11 @@ var Message = React.createClass({
                 <div className="message">
                     <img className="avatar" src={this.props.avatar}></img>
                     <p className="text">{this.props.text}</p>
-                    <textbox>TimeNDate</textbox>
-                    <button>Edit</button>
-                    <button>Delete</button>
+                    <div className="messageButtons">
+                        <textbox>TimeNDate</textbox>
+                        <button>Edit</button>
+                        <button>Delete</button>
+                    </div>
                 </div>
                 
             </div>
@@ -21,7 +23,7 @@ var MessageContainer = React.createClass({
         "use strict";
         var messages = this.props.data.map( function(value, index) {
             return (
-                <Message avatar="kuva/avatarph.png" text={value.text} />
+                <Message avatar={value.avatar} text={value.text} />
             );
         });
 
