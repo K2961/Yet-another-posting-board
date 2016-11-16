@@ -13,6 +13,11 @@ class Database
         $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     }
     
+    function sendMessage($message)
+    {
+        
+    }
+    
     function getMessages($topicID)
     {
         $messages = array();
