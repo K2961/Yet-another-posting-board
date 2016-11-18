@@ -62,7 +62,7 @@ SQL;
                 "avatar" => $user["AvatarUrl"],
                 "userName" => $user["Name"],
                 "text" => $row["Text"],
-                "posted" => $row["Posted"],
+                "posted" => $row["Posted"]
             );
         }
         return $messages;
@@ -90,5 +90,29 @@ SQL;
         $result->bindValue(':password', $password, PDO::PARAM_STR);
         $result->bindValue(':avatarUrl', $avatarUrl, PDO::PARAM_STR);
         $result->execute();
+    }
+    
+    function authenticateUser($name, $password)
+    {
+        $query = <<<SQL
+        SELECT * FROM User
+        WHERE Name=:name AND Password=:password
+SQL;
+        
+        $result = $this->pdo->prepare($query);
+        $result->bindValue(':name', $name, PDO::PARAM_STR);
+        $result->bindValue(':password', $password, PDO::PARAM_STR);
+        $result->execute();
+        
+        if ($row = $result->fetch())
+        {
+            $user = array(
+                "id" => $row["Id"],
+                "name" => $row["Name"]
+            );
+            return $user;
+        }
+        return null;
+        
     }
 }

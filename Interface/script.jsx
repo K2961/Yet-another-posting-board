@@ -152,6 +152,14 @@ var Topic = React.createClass({
 });
 
 var LoginPopup = React.createClass({
+    handleCancel: function() {
+        this.props.cancel();
+    },
+    
+    handleLogin: function() {
+        this.props.send(this.refs.username.value, this.refs.password.value);
+    },
+    
     render: function() {
         "use strict";
         return (
@@ -159,15 +167,15 @@ var LoginPopup = React.createClass({
                 <table>
                     <tr>
                         <td>Login</td>
-                        <td><input type="text"></input></td>
+                        <td><input ref="username" type="text"></input></td>
                     </tr>
                     <tr>
                         <td>Password</td>
-                        <td><input type="text"></input></td>
+                        <td><input ref="password" type="text"></input></td>
                     </tr>     
                 </table>
-                <button>Log in</button>
-                <button>Cancel</button>    
+                <button onClick={this.handleLogin}>Log in</button>
+                <button onClick={this.handleCancel}>Cancel</button>    
             </div>
         );
     } 
@@ -228,6 +236,23 @@ var Page = React.createClass({
         });
     },
     
+    sendLogin: function(name, password) {
+        $.ajax({
+            url: "SendLogin.php",
+            method: "post",
+            data: {name: name, password: password},
+            dataType: "text",
+            cache: false,
+            success: function(data) {
+                console.log("Login successful");
+                console.log(JSON.stringify(data));
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("ERROR: sendLogin: ", status, err.toString());
+            }
+        });
+    },
+    
     sendRegistration: function(name, password) { 
         $.ajax({
             url: "SendRegistration.php",
@@ -236,7 +261,7 @@ var Page = React.createClass({
             dataType: "text",
             cache: false,
             success: function() {
-                console.log("Success");
+                console.log("Registration successful");
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("ERROR: sendRegistration: ", status, err.toString());
@@ -256,7 +281,7 @@ var Page = React.createClass({
                     <button onClick={this.register_onClick}>Register</button>
                 </div>
                 {this.state.showRegister ? <RegisterPopup send={this.sendRegistration} cancel={this.register_onClick} /> : null}
-                {this.state.showLogin ? <LoginPopup /> : null}
+                {this.state.showLogin ? <LoginPopup send={this.sendLogin} cancel={this.login_onClick} /> : null}
                 <Topic />
             </div>
         );
