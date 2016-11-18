@@ -48,7 +48,8 @@ SQL;
 
             $messages[] = array (
                 "avatar" => $user["AvatarUrl"],
-                "text" => $row["Text"]
+                "text" => $row["Text"],
+                "posted" => $row["Posted"],
             );
         }
         return $messages;
