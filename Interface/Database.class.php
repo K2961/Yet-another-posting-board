@@ -65,4 +65,18 @@ SQL;
         }
         return null;
     }
+    
+    function addUser($name, $password, $avatarUrl)
+    {
+        $query = <<<SQL
+        INSERT INTO User(Name, Password, AvatarUrl, Joined)
+        VALUES (:name, :password, :avatarUrl, NOW());
+SQL;
+        
+        $result = $this->pdo->prepare($query);
+        $result->bindValue(':name', $name, PDO::PARAM_STR);
+        $result->bindValue(':password', $password, PDO::PARAM_STR);
+        $result->bindValue(':avatarUrl', $avatarUrl, PDO::PARAM_STR);
+        $result->execute();
+    }
 }

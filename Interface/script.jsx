@@ -155,6 +155,14 @@ var LoginPopup = React.createClass({
 });
 
 var RegisterPopup = React.createClass({
+    handleCancel: function() {
+        this.props.cancel();
+    },
+    
+    handleRegister: function() {
+        this.props.send(this.refs.username.value, this.refs.password.value);
+    },
+    
     render: function() {
         "use strict";
         return (
@@ -162,15 +170,15 @@ var RegisterPopup = React.createClass({
                 <table>
                     <tr>
                         <td>Username</td>
-                        <td><input type="text"></input></td>
+                        <td><input ref="username" type="text"></input></td>
                     </tr>
                     <tr>
                         <td>Password</td>
-                        <td><input type="text"></input></td>
+                        <td><input ref="password" type="text"></input></td>
                     </tr>     
                 </table>
-                <button>Register account</button>
-                <button>Cancel</button>    
+                <button onClick={this.handleRegister}>Register account</button>
+                <button onClick={this.handleCancel}>Cancel</button>    
             </div>
         );
     } 
@@ -201,6 +209,22 @@ var Page = React.createClass({
         });
     },
     
+    sendRegistration: function(name, password) { 
+        $.ajax({
+            url: "SendRegistration.php",
+            method: "post",
+            data: {name: name, password: password},
+            dataType: "text",
+            cache: false,
+            success: function() {
+                console.log("Success");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("ERROR: sendRegistration: ", status, err.toString());
+            }
+        });
+    },
+    
     render: function() {
         "use strict";
         return (
@@ -212,7 +236,7 @@ var Page = React.createClass({
                     <button onClick={this.login_onClick}>Log in</button>
                     <button onClick={this.register_onClick}>Register</button>
                 </div>
-                {this.state.showRegister ? <RegisterPopup /> : null}
+                {this.state.showRegister ? <RegisterPopup send={this.sendRegistration} cancel={this.register_onClick} /> : null}
                 {this.state.showLogin ? <LoginPopup /> : null}
                 <Topic />
             </div>
