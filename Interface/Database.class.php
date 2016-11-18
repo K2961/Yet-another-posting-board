@@ -26,7 +26,18 @@ SQL;
         $result->execute();
     }
     
-    function getMessages($topicID)
+    function getTopic($topicId)
+    {
+        $topic = array();
+        $statement = $this->pdo->query("SELECT * FROM Topic WHERE Id='$topicId'");
+        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
+        {
+            $topic["title"] = $row["Title"];
+        }
+        return $topic;
+    }
+    
+    function getMessages($topicId)
     {
         $messages = array();
         $statement = $this->pdo->query("SELECT * FROM Message");
@@ -40,7 +51,6 @@ SQL;
                 "text" => $row["Text"]
             );
         }
-        
         return $messages;
     }
     
