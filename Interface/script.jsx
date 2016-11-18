@@ -5,6 +5,7 @@ var Message = React.createClass({
             <div>
                 <div className="message">
                     <img className="avatar" src={this.props.avatar}></img>
+                    <texbox>Username</texbox>
                     <p className="text">{this.props.text}</p>
                     <div className="messageButtons">
                         <textbox>TimeNDate</textbox>
@@ -129,8 +130,25 @@ var Topic = React.createClass({
     }
 });
 
+var Page = React.createClass({
+    render: function() {
+        "use strict";
+        return (
+            <div className="page">
+                <div className="pageHeader">
+                    <h1>Welcome to test forum</h1>
+                </div>
+                <div className="loginBar">
+                    <button>Log in</button>
+                    <button>Register</button>
+                </div>
+                <Topic />
+            </div>
+        );
+    }
+});
 
 ReactDOM.render(
-    <Topic />,
+    <Page />,
     document.getElementById("messages")
 );
