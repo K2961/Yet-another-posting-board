@@ -1,6 +1,21 @@
 var Message = React.createClass({
+    getInitialState: function () {
+        return ({
+            showEditor: false
+        });
+    },
+    
     handleDelete: function () {
         this.props.deleteMessage(this.props.id);
+    },
+    
+    handleEdit: function () {
+        this.setState({showEditor: ! this.state.showEditor});
+    },
+    
+    handleSave: function () {
+        this.props.editMessage(this.props.id, this.refs.messageEditor.value);
+        this.setState({showEditor: ! this.state.showEditor});
     },
     
     render: function () {
@@ -12,10 +27,14 @@ var Message = React.createClass({
                         <img className="avatar" src={this.props.avatar}></img>
                         <p className="userName">{this.props.userName}</p>
                     </div>
-                    <p className="text">{this.props.text}</p>
+                    <div className="textContainer">
+                        {this.state.showEditor ? <textarea ref="messageEditor" className="messageEditor" defaultValue={this.props.text}></textarea> : null}
+                        {! this.state.showEditor ? <p className="text">{this.props.text}</p> : null}
+                    </div>
                     <div className="messageButtons">
                         <div>{this.props.posted}</div>
-                        <button>Edit</button>
+                        {! this.state.showEditor ? <button onClick={this.handleEdit}>Edit</button> : null}
+                        {this.state.showEditor ? <button onClick={this.handleSave}>Save</button> : null}
                         <button onClick={this.handleDelete}>Delete</button>
                     </div>
                 </div>
@@ -30,10 +49,11 @@ var MessageContainer = React.createClass({
         "use strict";
         var key = 0;
         var deleteMessage = this.props.deleteMessage;
+        var editMessage = this.props.editMessage;
         var messages = this.props.data.map( function(value, index) {
             key++;
             return (
-                <Message key={key} id={value.id} avatar={value.avatar} userName={value.userName} text={value.text} posted={value.posted} deleteMessage={deleteMessage} />
+                <Message key={key} id={value.id} avatar={value.avatar} userName={value.userName} text={value.text} posted={value.posted} deleteMessage={deleteMessage} editMessage={editMessage}/>
             );
         });
 
@@ -62,7 +82,7 @@ var MessageWriter = React.createClass({
             </div>
         );
     }
-})
+});
 
 var Topic = React.createClass({
     getInitialState: function() {
@@ -134,6 +154,20 @@ var Topic = React.createClass({
         });
     },
     
+    editMessage: function(id, text) {
+        $.ajax({
+            url: "EditMessage.php",
+            method: "post",
+            data: {id: id, text: text},
+            dataType: "text",
+            cache: false,
+            success: this.getMessages,
+            error: function(xhr, status, err) {
+                console.error("ERROR: editMessage: ", status, err.toString());
+            }
+        });
+    },
+    
     componentDidMount: function() {
         this.getTopic();
         this.getMessages();
@@ -145,7 +179,7 @@ var Topic = React.createClass({
             <div className="topic">
                 <h1>{this.state.title}</h1>
                 <MessageWriter sendMessage={this.sendMessage}/>
-                <MessageContainer data={this.state.data} deleteMessage={this.deleteMessage}/>
+                <MessageContainer data={this.state.data} deleteMessage={this.deleteMessage} editMessage={this.editMessage}/>
             </div>
         );
     }

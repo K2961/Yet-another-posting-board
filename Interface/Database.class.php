@@ -26,6 +26,20 @@ SQL;
         $result->execute();
     }
     
+    function editMessage($messageId, $text)
+    {
+        $query = <<<SQL
+        UPDATE Message
+        SET Text = :text
+        WHERE Id = :id;
+SQL;
+        
+        $result = $this->pdo->prepare($query);
+        $result->bindValue(':id', $messageId, PDO::PARAM_INT);
+        $result->bindValue(':text', $text, PDO::PARAM_STR);
+        $result->execute();
+    }
+    
     function deleteMessage($messageId)
     {
         $query = <<<SQL
