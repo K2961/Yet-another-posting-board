@@ -4,11 +4,13 @@ var Message = React.createClass({
         return (
             <div>
                 <div className="message">
-                    <img className="avatar" src={this.props.avatar}></img>
-                    <texbox>Username</texbox>
+                    <div className="userInfo">
+                        <img className="avatar" src={this.props.avatar}></img>
+                        <p className="userName">Username</p>
+                    </div>
                     <p className="text">{this.props.text}</p>
                     <div className="messageButtons">
-                        <textbox>TimeNDate</textbox>
+                        <div>TimeNDate</div>
                         <button>Edit</button>
                         <button>Delete</button>
                     </div>
