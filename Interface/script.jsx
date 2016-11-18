@@ -6,11 +6,11 @@ var Message = React.createClass({
                 <div className="message">
                     <div className="userInfo">
                         <img className="avatar" src={this.props.avatar}></img>
-                        <p className="userName">Username</p>
+                        <p className="userName">{this.props.userName}</p>
                     </div>
                     <p className="text">{this.props.text}</p>
                     <div className="messageButtons">
-                        <div>TimeNDate</div>
+                        <div>{this.props.posted}</div>
                         <button>Edit</button>
                         <button>Delete</button>
                     </div>
@@ -28,7 +28,7 @@ var MessageContainer = React.createClass({
         var messages = this.props.data.map( function(value, index) {
             key++;
             return (
-                <Message key={key} avatar={value.avatar} text={value.text} />
+                <Message key={key} avatar={value.avatar} userName={value.userName} text={value.text} posted={value.posted} />
             );
         });
 
@@ -132,7 +132,75 @@ var Topic = React.createClass({
     }
 });
 
+var LoginPopup = React.createClass({
+    render: function() {
+        "use strict";
+        return (
+            <div className="loginPopup">
+                <table>
+                    <tr>
+                        <td>Login</td>
+                        <td><input type="text"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Password</td>
+                        <td><input type="text"></input></td>
+                    </tr>     
+                </table>
+                <button>Log in</button>
+                <button>Cancel</button>    
+            </div>
+        );
+    } 
+});
+
+var RegisterPopup = React.createClass({
+    render: function() {
+        "use strict";
+        return (
+            <div className="registerPopup">
+                <table>
+                    <tr>
+                        <td>Username</td>
+                        <td><input type="text"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Password</td>
+                        <td><input type="text"></input></td>
+                    </tr>     
+                </table>
+                <button>Register account</button>
+                <button>Cancel</button>    
+            </div>
+        );
+    } 
+});
+
 var Page = React.createClass({
+    getInitialState: function() {
+        return (
+            {
+                showLogin: false,
+                showRegister: false
+            }
+            
+        );
+    },
+    
+    login_onClick: function() {        
+        this.setState({
+            showLogin: ! this.state.showLogin,
+            showRegister: false
+        });
+    },
+    
+    register_onClick: function() {
+        this.setState({
+            showLogin: false,
+            showRegister: ! this.state.showRegister
+        });
+    },
+    
     render: function() {
         "use strict";
         return (
@@ -141,9 +209,11 @@ var Page = React.createClass({
                     <h1>Welcome to test forum</h1>
                 </div>
                 <div className="loginBar">
-                    <button>Log in</button>
-                    <button>Register</button>
+                    <button onClick={this.login_onClick}>Log in</button>
+                    <button onClick={this.register_onClick}>Register</button>
                 </div>
+                {this.state.showRegister ? <RegisterPopup /> : null}
+                {this.state.showLogin ? <LoginPopup /> : null}
                 <Topic />
             </div>
         );

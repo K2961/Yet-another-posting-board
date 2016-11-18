@@ -40,6 +40,24 @@
     clear: both;
     margin: 0.3em;
 }
+.registerPopup{
+    visibility: visible;
+    border: 1px solid black;
+    position: fixed;
+    top: 10em;
+    left: 10em;
+    background-color: lightgray;
+    opacity: 1;
+}
+.loginPopup{
+    visibility: visible;
+    border: 1px solid black;
+    position: fixed;
+    top: 10em;
+    left: 10em;
+    background-color: lightgray;
+    opacity: 1;
+}
 .loginBar{
     clear: both;
     border: 0.06em solid black;
