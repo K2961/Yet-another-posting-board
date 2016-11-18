@@ -1,6 +1,16 @@
 var Message = React.createClass({
+    getInitialState: function () {
+        return ({
+            showEditor: false
+        });
+    },
+    
     handleDelete: function () {
         this.props.deleteMessage(this.props.id);
+    },
+    
+    handleEdit: function () {
+        this.setState({showEditor: ! this.state.showEditor});
     },
     
     render: function () {
@@ -12,10 +22,14 @@ var Message = React.createClass({
                         <img className="avatar" src={this.props.avatar}></img>
                         <p className="userName">{this.props.userName}</p>
                     </div>
-                    <p className="text">{this.props.text}</p>
+                    <div className="textContainer">
+                        {this.state.showEditor ? <textarea className="messageEditor" defaultValue={this.props.text}></textarea> : null}
+                        {! this.state.showEditor ? <p className="text">{this.props.text}</p> : null}
+                    </div>
                     <div className="messageButtons">
                         <div>{this.props.posted}</div>
-                        <button>Edit</button>
+                        {! this.state.showEditor ? <button onClick={this.handleEdit}>Edit</button> : null}
+                        {this.state.showEditor ? <button>Save</button> : null}
                         <button onClick={this.handleDelete}>Delete</button>
                     </div>
                 </div>
@@ -62,7 +76,7 @@ var MessageWriter = React.createClass({
             </div>
         );
     }
-})
+});
 
 var Topic = React.createClass({
     getInitialState: function() {

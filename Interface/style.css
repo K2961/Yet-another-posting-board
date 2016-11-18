@@ -17,8 +17,12 @@
     margin-bottom: 1em;
     padding: 0;
 }
-.text p{
-    float: right;
+.textContainer{
+    float: left;
+}
+.messageEditor{
+    width: 100%;
+    height: 100%;
 }
 .messageButtons{
     clear: both;
