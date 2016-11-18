@@ -2,39 +2,47 @@
 .message{
     border: 0.063em solid black;
 }
-.avatar{
+.userInfo{
     float: left;
-    border: 0.063em solid black;
-    margin: 0.313em;
-    width: 7.813em;
-    height: 7.813em;
+}
+.avatar{
+    border: 0.06em solid black;
+    margin: 0.3em;
+    width: 8em;
+    height: 8em;
+}
+.userName{
+    margin-top: 0;
+    margin-left: 0.3em;
+    margin-bottom: 1em;
+    padding: 0;
 }
 .text p{
     float: right;
 }
 .messageButtons{
     clear: both;
-    border-top: 0.063em solid black;
-    margin: 0.313em;
+    border-top: 0.06em solid black;
+    margin: 0.3em;
 }
 .topic{
-    padding: 0.313em;
-    border: 0.063em solid black;
-    margin: 0.313em;
+    padding: 0.3em;
+    border: 0.06em solid black;
+    margin: 0.3em;
 }
 .messageWriter textarea{
     max-width: 20em;
     max-height: 20em;
     float: left;
-    border: 0.063em solid black;
+    border: 0.06em solid black;
 }
 .writerButtons{
     clear: both;
-    margin: 0.313em;
+    margin: 0.3em;
 }
 .loginBar{
     clear: both;
-    border: 0.063em solid black;
+    border: 0.06em solid black;
 }
 .pageHeader{
     clear: both;
