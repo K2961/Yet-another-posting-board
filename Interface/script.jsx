@@ -24,9 +24,11 @@ var Message = React.createClass({
 var MessageContainer = React.createClass({                                         
     render: function () {
         "use strict";
+        var key = 0;
         var messages = this.props.data.map( function(value, index) {
+            key++;
             return (
-                <Message avatar={value.avatar} text={value.text} />
+                <Message key={key} avatar={value.avatar} text={value.text} />
             );
         });
 
@@ -47,7 +49,7 @@ var MessageWriter = React.createClass({
         "use strict";
         return(
             <div className="messageWriter">
-                <textarea ref="text">Text here</textarea>
+                <textarea ref="text" placeholder="Text here" />
                 <div className="writerButtons">
                     <button onClick={this.handleSend}>Send</button>
                     <button>Clear</button>
