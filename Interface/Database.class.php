@@ -26,6 +26,17 @@ SQL;
         $result->execute();
     }
     
+    function deleteMessage($messageId)
+    {
+        $query = <<<SQL
+        DELETE FROM Message 
+        WHERE Id = :id;
+SQL;
+        $result = $this->pdo->prepare($query);
+        $result->bindValue(':id', $messageId, PDO::PARAM_INT);
+        $result->execute();
+    }
+    
     function getTopic($topicId)
     {
         $topic = array();
@@ -47,6 +58,7 @@ SQL;
             $user = $this->getUser($userId);
 
             $messages[] = array (
+                "id" => $row["Id"],
                 "avatar" => $user["AvatarUrl"],
                 "userName" => $user["Name"],
                 "text" => $row["Text"],
