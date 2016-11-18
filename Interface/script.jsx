@@ -1,4 +1,8 @@
 var Message = React.createClass({
+    handleDelete: function () {
+        this.props.deleteMessage(this.props.id);
+    },
+    
     render: function () {
         "use strict";
         return (
@@ -12,7 +16,7 @@ var Message = React.createClass({
                     <div className="messageButtons">
                         <div>{this.props.posted}</div>
                         <button>Edit</button>
-                        <button>Delete</button>
+                        <button onClick={this.handleDelete}>Delete</button>
                     </div>
                 </div>
                 
@@ -25,10 +29,11 @@ var MessageContainer = React.createClass({
     render: function () {
         "use strict";
         var key = 0;
+        var deleteMessage = this.props.deleteMessage;
         var messages = this.props.data.map( function(value, index) {
             key++;
             return (
-                <Message key={key} avatar={value.avatar} userName={value.userName} text={value.text} posted={value.posted} />
+                <Message key={key} id={value.id} avatar={value.avatar} userName={value.userName} text={value.text} posted={value.posted} deleteMessage={deleteMessage} />
             );
         });
 
@@ -115,6 +120,20 @@ var Topic = React.createClass({
         });
     },
     
+    deleteMessage: function(id) {
+        $.ajax({
+            url: "DeleteMessage.php",
+            method: "post",
+            data: {id: id},
+            dataType: "text",
+            cache: false,
+            success: this.getMessages,
+            error: function(xhr, status, err) {
+                console.error("ERROR: deleteMessage: ", status, err.toString());
+            }
+        });
+    },
+    
     componentDidMount: function() {
         this.getTopic();
         this.getMessages();
@@ -126,7 +145,7 @@ var Topic = React.createClass({
             <div className="topic">
                 <h1>{this.state.title}</h1>
                 <MessageWriter sendMessage={this.sendMessage}/>
-                <MessageContainer data={this.state.data} />
+                <MessageContainer data={this.state.data} deleteMessage={this.deleteMessage}/>
             </div>
         );
     }
