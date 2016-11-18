@@ -56,7 +56,10 @@ var MessageWriter = React.createClass({
 
 var Topic = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {
+            title: "Test title",
+            data: []
+        };
     },
     
     sendMessage: function(message) { 
@@ -73,6 +76,23 @@ var Topic = React.createClass({
         });
     },
     
+    getTopic: function() {
+        $.ajax({
+            url: "GetTopic.php",
+            dataType: "json",
+            cache: false,
+            success: function(data) {
+                this.setState({
+                    title: data.title,
+                    data: this.state.data
+                });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("ERROR: getMessages: ", status, err.toString());
+            }
+        });
+    },
+    
     getMessages: function() {
         $.ajax({
             url: "GetMessages.php",
@@ -80,6 +100,7 @@ var Topic = React.createClass({
             cache: false,
             success: function(data) {
                 this.setState({
+                    title: this.state.title,
                     data: data
                 });
             }.bind(this),
@@ -90,6 +111,7 @@ var Topic = React.createClass({
     },
     
     componentDidMount: function() {
+        this.getTopic();
         this.getMessages();
         //setInterval(this.getMessages, 5000);
     },
@@ -97,7 +119,7 @@ var Topic = React.createClass({
     render: function() {
         return (
             <div className="topic">
-                <h1>Test title</h1>
+                <h1>{this.state.title}</h1>
                 <MessageWriter sendMessage={this.sendMessage}/>
                 <MessageContainer data={this.state.data} />
             </div>
