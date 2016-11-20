@@ -13,48 +13,51 @@ class Database
         $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     }
     
-    function sendMessage($userId, $text)
+    function sendMessage($topicId, $userId, $text)
     {
         $query = <<<SQL
         INSERT INTO Message(TopicId, UserId, Text, Posted)
-        VALUES (:userid, 1, :text, NOW());
+        VALUES (:topicId, :userId, :text, NOW());
 SQL;
         
-        $result = $this->pdo->prepare($query);
-        $result->bindValue(':userid', $userId, PDO::PARAM_INT);
-        $result->bindValue(':text', $text, PDO::PARAM_STR);
-        $result->execute();
+        $statement = $this->pdo->prepare($query);
+        $statement->bindValue(':topicId', $topicId, PDO::PARAM_INT);
+        $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+        $statement->bindValue(':text', $text, PDO::PARAM_STR);
+        $statement->execute();
     }
     
-    function editMessage($messageId, $text)
+    function editMessage($messageId, $userId, $text)
     {
         $query = <<<SQL
         UPDATE Message
         SET Text = :text
-        WHERE Id = :id;
+        WHERE Id = :messageId AND UserId = :userId;
 SQL;
         
-        $result = $this->pdo->prepare($query);
-        $result->bindValue(':id', $messageId, PDO::PARAM_INT);
-        $result->bindValue(':text', $text, PDO::PARAM_STR);
-        $result->execute();
+        $statement = $this->pdo->prepare($query);
+        $statement->bindValue(':messageId', $messageId, PDO::PARAM_INT);
+        $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+        $statement->bindValue(':text', $text, PDO::PARAM_STR);
+        $statement->execute();
     }
     
-    function deleteMessage($messageId)
+    function deleteMessage($messageId, $userId)
     {
         $query = <<<SQL
         DELETE FROM Message 
-        WHERE Id = :id;
+        WHERE Id = :messageId AND UserId = :userId;
 SQL;
-        $result = $this->pdo->prepare($query);
-        $result->bindValue(':id', $messageId, PDO::PARAM_INT);
-        $result->execute();
+        $statement = $this->pdo->prepare($query);
+        $statement->bindValue(':messageId', $messageId, PDO::PARAM_INT);
+        $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+        $statement->execute();
     }
     
     function getTopic($topicId)
     {
         $topic = array();
-        $statement = $this->pdo->query("SELECT * FROM Topic WHERE Id='$topicId'");
+        $statement = $this->pdo->query("SELECT * FROM Topic WHERE Id=$topicId");
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
         {
             $topic["title"] = $row["Title"];
@@ -65,7 +68,7 @@ SQL;
     function getMessages($topicId)
     {
         $messages = array();
-        $statement = $this->pdo->query("SELECT * FROM Message");
+        $statement = $this->pdo->query("SELECT * FROM Message ORDER BY Posted DESC");
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
         {
             $userId = $row["UserId"];
@@ -82,10 +85,10 @@ SQL;
         return $messages;
     }
     
-    function getUser($userID)
+    function getUser($userId)
     {
-        $statement = $this->pdo->query("SELECT * FROM User WHERE Id=$userID");
-        while ($row = $statement->fetch(PDO::FETCH_ASSOC))
+        $statement = $this->pdo->query("SELECT * FROM User WHERE Id=$userId");
+        if ($row = $statement->fetch(PDO::FETCH_ASSOC))
         {
             return $row;
         }
@@ -99,11 +102,11 @@ SQL;
         VALUES (:name, :password, :avatarUrl, NOW());
 SQL;
         
-        $result = $this->pdo->prepare($query);
-        $result->bindValue(':name', $name, PDO::PARAM_STR);
-        $result->bindValue(':password', $password, PDO::PARAM_STR);
-        $result->bindValue(':avatarUrl', $avatarUrl, PDO::PARAM_STR);
-        $result->execute();
+        $statement = $this->pdo->prepare($query);
+        $statement->bindValue(':name', $name, PDO::PARAM_STR);
+        $statement->bindValue(':password', $password, PDO::PARAM_STR);
+        $statement->bindValue(':avatarUrl', $avatarUrl, PDO::PARAM_STR);
+        $statement->execute();
     }
     
     function authenticateUser($name, $password)
@@ -113,12 +116,12 @@ SQL;
         WHERE Name=:name AND Password=:password
 SQL;
         
-        $result = $this->pdo->prepare($query);
-        $result->bindValue(':name', $name, PDO::PARAM_STR);
-        $result->bindValue(':password', $password, PDO::PARAM_STR);
-        $result->execute();
+        $statement = $this->pdo->prepare($query);
+        $statement->bindValue(':name', $name, PDO::PARAM_STR);
+        $statement->bindValue(':password', $password, PDO::PARAM_STR);
+        $statement->execute();
         
-        if ($row = $result->fetch())
+        if ($row = $statement->fetch())
         {
             $user = array(
                 "id" => $row["Id"],

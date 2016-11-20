@@ -249,8 +249,8 @@ var Page = React.createClass({
     getInitialState: function() {
         return (
             {
-                showLogin: false,
-                showRegister: false
+                isLoginVisible: false,
+                isRegisterVisible: false
             }
             
         );
@@ -258,19 +258,23 @@ var Page = React.createClass({
     
     login_onClick: function() {        
         this.setState({
-            showLogin: ! this.state.showLogin,
-            showRegister: false
+            isLoginVisible: ! this.state.isLoginVisible,
+            isRegisterVisible: false
         });
     },
     
     register_onClick: function() {
         this.setState({
-            showLogin: false,
-            showRegister: ! this.state.showRegister
+            isLoginVisible: false,
+            isRegisterVisible: ! this.state.isRegisterVisible
         });
     },
     
     sendLogin: function(name, password) {
+        this.setState({
+            isLoginVisible: false,
+            isRegisterVisible: false
+        });
         $.ajax({
             url: "SendLogin.php",
             method: "post",
@@ -314,8 +318,8 @@ var Page = React.createClass({
                     <button onClick={this.login_onClick}>Log in</button>
                     <button onClick={this.register_onClick}>Register</button>
                 </div>
-                {this.state.showRegister ? <RegisterPopup send={this.sendRegistration} cancel={this.register_onClick} /> : null}
-                {this.state.showLogin ? <LoginPopup send={this.sendLogin} cancel={this.login_onClick} /> : null}
+                {this.state.isRegisterVisible ? <RegisterPopup send={this.sendRegistration} cancel={this.register_onClick} /> : null}
+                {this.state.isLoginVisible ? <LoginPopup send={this.sendLogin} cancel={this.login_onClick} /> : null}
                 <Topic />
             </div>
         );
