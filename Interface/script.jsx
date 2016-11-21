@@ -18,6 +18,11 @@ var Message = React.createClass({
         this.setState({isEditorVisible: ! this.state.isEditorVisible});
     },
     
+	areButtonsVisible: function() {
+		var page = this.props.container.props.topic.props.page;
+		return this.props.userName === page.state.userName;
+	},
+	
     render: function () {
         "use strict";
         return (
@@ -31,12 +36,18 @@ var Message = React.createClass({
                         {this.state.isEditorVisible ? <textarea ref="messageEditor" className="messageEditor" defaultValue={this.props.text}></textarea> : null}
                         {! this.state.isEditorVisible ? <p className="text">{this.props.text}</p> : null}
                     </div>
-                    <div className="messageButtons">
-                        <div>{this.props.posted}</div>
-                        {! this.state.isEditorVisible ? <button onClick={this.handleEdit}>Edit</button> : null}
-                        {this.state.isEditorVisible ? <button onClick={this.handleSave}>Save</button> : null}
-                        <button onClick={this.handleDelete}>Delete</button>
-                    </div>
+					
+					<div className="messageButtons">
+						{ this.props.posted }
+						{ this.areButtonsVisible() ?
+							<div>
+								{! this.state.isEditorVisible ? <button onClick={this.handleEdit}>Edit</button> : null}
+								{this.state.isEditorVisible ? <button onClick={this.handleSave}>Save</button> : null}
+								<button onClick={this.handleDelete}>Delete</button>
+							</div>
+							: null
+						}
+					</div>
                 </div>
                 
             </div>
@@ -48,12 +59,14 @@ var MessageContainer = React.createClass({
     render: function () {
         "use strict";
         var key = 0;
+		var container = this;
         var deleteMessage = this.props.deleteMessage;
         var editMessage = this.props.editMessage;
         var messages = this.props.data.map( function(value, index) {
             key++;
             return (
-                <Message key={key} id={value.id} avatar={value.avatar} userName={value.userName} text={value.text} posted={value.posted} deleteMessage={deleteMessage} editMessage={editMessage}/>
+                <Message key={key} container={container} id={value.id} avatar={value.avatar} userName={value.userName} 
+					text={value.text} posted={value.posted} deleteMessage={deleteMessage} editMessage={editMessage}/>
             );
         });
 
@@ -179,7 +192,7 @@ var Topic = React.createClass({
             <div className="topic">
                 <h1>{this.state.title}</h1>
 				{this.props.page.state.userName !== "" ? <MessageWriter sendMessage={this.sendMessage}/> : null}
-                <MessageContainer data={this.state.data} deleteMessage={this.deleteMessage} editMessage={this.editMessage}/>
+                <MessageContainer topic={this} data={this.state.data} deleteMessage={this.deleteMessage} editMessage={this.editMessage}/>
             </div>
         );
     }
