@@ -299,8 +299,9 @@ var LoginBar = React.createClass({
             data: {name: name, password: password},
             dataType: "text",
             cache: false,
-            success: function() {
-				
+            success: function(json) {
+				var data = JSON.parse(json);
+				this.props.page.setState({userName: data.name});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("ERROR: sendRegistration: ", status, err.toString());

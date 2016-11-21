@@ -107,6 +107,8 @@ SQL;
         $statement->bindValue(':password', $password, PDO::PARAM_STR);
         $statement->bindValue(':avatarUrl', $avatarUrl, PDO::PARAM_STR);
         $statement->execute();
+		
+		return $this->authenticateUser($name, $password);
     }
     
     function authenticateUser($name, $password)
