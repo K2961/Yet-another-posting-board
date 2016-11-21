@@ -1,9 +1,9 @@
 <?php
 require_once("Database.class.php");
-$db = new Database();
-$name = $_REQUEST["name"];
-$password = $_REQUEST["password"];
-$user = $db->authenticateUser($name, $password);
+$database = new Database();
+$name = $_POST["name"];
+$password = $_POST["password"];
+$user = $database->authenticateUser($name, $password);
 if ($user !== null)
 {
     session_start();

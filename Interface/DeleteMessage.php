@@ -7,6 +7,6 @@ if ($userId === -1)
 }
 
 require_once("Database.class.php");
-$db = new Database();
+$database = new Database();
 $messageId = $_REQUEST["id"];
-$db->deleteMessage($messageId, $userId);
+$database->deleteMessage($messageId, $userId);

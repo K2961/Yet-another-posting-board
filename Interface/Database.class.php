@@ -1,16 +1,20 @@
 <?php
 require_once("PathInit.php");
 require_once(DB_INIT_PATH);
+require_once(PASSWORD_LIB_PATH);
 
 class Database
 {
     private $pdo;
+	private $passwordLib;
     
     function __construct()
     {
         $this->pdo = new PDO("mysql:host=".DB_HOST.";dbname=".DB_NAME.";charset=utf8", DB_USER, DB_PASSWORD);
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+		
+		$this->passwordLib = new PasswordLib\PasswordLib();
     }
     
     function sendMessage($topicId, $userId, $text)
@@ -96,7 +100,9 @@ SQL;
     }
     
     function addUser($name, $password, $avatarUrl)
-    {
+    {	
+		$passwordHash = $this->passwordLib->createPasswordHash($password,  '$2a$', array('cost' => 12));
+		
         $query = <<<SQL
         INSERT INTO User(Name, Password, AvatarUrl, Joined)
         VALUES (:name, :password, :avatarUrl, NOW());
@@ -104,7 +110,7 @@ SQL;
         
         $statement = $this->pdo->prepare($query);
         $statement->bindValue(':name', $name, PDO::PARAM_STR);
-        $statement->bindValue(':password', $password, PDO::PARAM_STR);
+        $statement->bindValue(':password', $passwordHash, PDO::PARAM_STR);
         $statement->bindValue(':avatarUrl', $avatarUrl, PDO::PARAM_STR);
         $statement->execute();
 		
@@ -115,15 +121,16 @@ SQL;
     {
         $query = <<<SQL
         SELECT * FROM User
-        WHERE Name=:name AND Password=:password
+        WHERE Name=:name;
 SQL;
         
         $statement = $this->pdo->prepare($query);
         $statement->bindValue(':name', $name, PDO::PARAM_STR);
-        $statement->bindValue(':password', $password, PDO::PARAM_STR);
         $statement->execute();
-        
-        if ($row = $statement->fetch())
+		
+		$row = $statement->fetch(PDO::FETCH_ASSOC);
+		
+        if ($this->passwordLib->verifyPasswordHash($password, $row["Password"]))
         {
             $user = array(
                 "id" => $row["Id"],
@@ -132,6 +139,5 @@ SQL;
             return $user;
         }
         return null;
-        
     }
 }

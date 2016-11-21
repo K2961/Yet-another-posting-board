@@ -7,7 +7,7 @@ if ($userId === -1)
 }
 
 require_once("Database.class.php");
-$db = new Database();
+$database = new Database();
 $messageId = $_REQUEST["id"];
 $text = $_REQUEST["text"];
-$db->editMessage($messageId, $userId, $text);
+$database->editMessage($messageId, $userId, $text);

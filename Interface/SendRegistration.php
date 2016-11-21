@@ -1,10 +1,11 @@
 <?php
-require_once("Database.class.php");
-$db = new Database();
+require_once "Database.class.php";
+$database = new Database();
+$passwordLib = new PasswordLib\PasswordLib();
 $name = $_POST["name"];
 $password = $_POST["password"];
 $avatarUrl = "Test.png";
-$user = $db->addUser($name, $password, $avatarUrl);
+$user = $database->addUser($name, $password, $avatarUrl);
 if ($user !== null)
 {
     session_start();

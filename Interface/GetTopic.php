@@ -1,6 +1,6 @@
 <?php
 require_once("Database.class.php");
-$db = new Database();
-$response = json_encode($db->getTopic(1));
+$database = new Database();
+$response = json_encode($database->getTopic(1));
 header('Content-type: application/json');
 echo $response;
