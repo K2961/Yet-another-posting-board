@@ -1,7 +1,6 @@
 <?php
 require_once "Database.class.php";
 $database = new Database();
-$passwordLib = new PasswordLib\PasswordLib();
 $name = $_POST["name"];
 $password = $_POST["password"];
 $avatarUrl = "Test.png";
