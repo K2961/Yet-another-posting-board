@@ -1,7 +1,7 @@
 var Message = React.createClass({
     getInitialState: function () {
         return ({
-            showEditor: false
+            isEditorVisible: false
         });
     },
     
@@ -10,12 +10,12 @@ var Message = React.createClass({
     },
     
     handleEdit: function () {
-        this.setState({showEditor: ! this.state.showEditor});
+        this.setState({isEditorVisible: ! this.state.isEditorVisible});
     },
     
     handleSave: function () {
         this.props.editMessage(this.props.id, this.refs.messageEditor.value);
-        this.setState({showEditor: ! this.state.showEditor});
+        this.setState({isEditorVisible: ! this.state.isEditorVisible});
     },
     
     render: function () {
@@ -28,13 +28,13 @@ var Message = React.createClass({
                         <p className="userName">{this.props.userName}</p>
                     </div>
                     <div className="textContainer">
-                        {this.state.showEditor ? <textarea ref="messageEditor" className="messageEditor" defaultValue={this.props.text}></textarea> : null}
-                        {! this.state.showEditor ? <p className="text">{this.props.text}</p> : null}
+                        {this.state.isEditorVisible ? <textarea ref="messageEditor" className="messageEditor" defaultValue={this.props.text}></textarea> : null}
+                        {! this.state.isEditorVisible ? <p className="text">{this.props.text}</p> : null}
                     </div>
                     <div className="messageButtons">
                         <div>{this.props.posted}</div>
-                        {! this.state.showEditor ? <button onClick={this.handleEdit}>Edit</button> : null}
-                        {this.state.showEditor ? <button onClick={this.handleSave}>Save</button> : null}
+                        {! this.state.isEditorVisible ? <button onClick={this.handleEdit}>Edit</button> : null}
+                        {this.state.isEditorVisible ? <button onClick={this.handleSave}>Save</button> : null}
                         <button onClick={this.handleDelete}>Delete</button>
                     </div>
                 </div>
@@ -178,7 +178,7 @@ var Topic = React.createClass({
         return (
             <div className="topic">
                 <h1>{this.state.title}</h1>
-                <MessageWriter sendMessage={this.sendMessage}/>
+				{this.props.page.state.userName !== "" ? <MessageWriter sendMessage={this.sendMessage}/> : null}
                 <MessageContainer data={this.state.data} deleteMessage={this.deleteMessage} editMessage={this.editMessage}/>
             </div>
         );
@@ -245,15 +245,12 @@ var RegisterPopup = React.createClass({
     } 
 });
 
-var Page = React.createClass({
-    getInitialState: function() {
-        return (
-            {
-                isLoginVisible: false,
-                isRegisterVisible: false
-            }
-            
-        );
+var LoginBar = React.createClass({
+	getInitialState: function() {
+        return ({
+			isLoginVisible: false,
+			isRegisterVisible: false
+		});
     },
     
     login_onClick: function() {        
@@ -269,8 +266,8 @@ var Page = React.createClass({
             isRegisterVisible: ! this.state.isRegisterVisible
         });
     },
-    
-    sendLogin: function(name, password) {
+	
+	sendLogin: function(name, password) {
         this.setState({
             isLoginVisible: false,
             isRegisterVisible: false
@@ -281,9 +278,9 @@ var Page = React.createClass({
             data: {name: name, password: password},
             dataType: "text",
             cache: false,
-            success: function(data) {
-                console.log("Login successful");
-                console.log(JSON.stringify(data));
+            success: function(json) {
+				var data = JSON.parse(json);
+				this.props.page.setState({userName: data.name});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("ERROR: sendLogin: ", status, err.toString());
@@ -292,6 +289,10 @@ var Page = React.createClass({
     },
     
     sendRegistration: function(name, password) { 
+        this.setState({
+            isLoginVisible: false,
+            isRegisterVisible: false
+        });
         $.ajax({
             url: "SendRegistration.php",
             method: "post",
@@ -299,28 +300,69 @@ var Page = React.createClass({
             dataType: "text",
             cache: false,
             success: function() {
-                console.log("Registration successful");
+				
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("ERROR: sendRegistration: ", status, err.toString());
             }
         });
     },
-    
-    render: function() {
+	
+	render: function() {
+		return (
+			<div className="loginBar">
+				<button onClick={this.login_onClick}>Log in</button>
+				<button onClick={this.register_onClick}>Register</button>
+				{this.state.isRegisterVisible ? <RegisterPopup send={this.sendRegistration} cancel={this.register_onClick} /> : null}
+				{this.state.isLoginVisible ? <LoginPopup send={this.sendLogin} cancel={this.login_onClick} /> : null}
+			</div>
+		);
+    }
+});
+
+var LogoutBar = React.createClass({
+	logout_onClick: function() {
+		$.ajax({
+            url: "SendLogout.php",
+            method: "post",
+            data: {},
+            dataType: "text",
+            cache: false,
+            success: function(data) {
+				this.props.page.setState({userName: ""});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("ERROR: sendLogout: ", status, err.toString());
+            }
+        });
+	},
+	
+	render: function() {
+		return (
+			<div className="loginBar">
+				<button onClick={this.logout_onClick}>Log out</button>
+				{this.props.page.state.userName}
+			</div>
+		);
+	}
+});
+
+var Page = React.createClass({
+    getInitialState: function() {
+		return ({
+			userName: ""
+		});
+	},
+	
+	render: function() {
         "use strict";
         return (
             <div className="page">
                 <div className="pageHeader">
                     <h1>Welcome to test forum</h1>
                 </div>
-                <div className="loginBar">
-                    <button onClick={this.login_onClick}>Log in</button>
-                    <button onClick={this.register_onClick}>Register</button>
-                </div>
-                {this.state.isRegisterVisible ? <RegisterPopup send={this.sendRegistration} cancel={this.register_onClick} /> : null}
-                {this.state.isLoginVisible ? <LoginPopup send={this.sendLogin} cancel={this.login_onClick} /> : null}
-                <Topic />
+				{this.state.userName === "" ? <LoginBar page={this} /> : <LogoutBar page={this} />}
+                <Topic page={this} />
             </div>
         );
     }
