@@ -5,17 +5,41 @@ var Message = React.createClass({
         });
     },
     
-    handleDelete: function () {
-        this.props.deleteMessage(this.props.id);
-    },
-    
     handleEdit: function () {
         this.setState({isEditorVisible: ! this.state.isEditorVisible});
     },
     
     handleSave: function () {
-        this.props.editMessage(this.props.id, this.refs.messageEditor.value);
         this.setState({isEditorVisible: ! this.state.isEditorVisible});
+        var topic = this.props.container.props.topic;
+        var id = this.props.id;
+        var text = this.refs.messageEditor.value;
+        $.ajax({
+            url: "EditMessage.php",
+            method: "post",
+            data: {id: id, text: text},
+            dataType: "text",
+            cache: false,
+            success: topic.getMessages,
+            error: function(xhr, status, err) {
+                console.error("ERROR: editMessage: ", status, err.toString());
+            }
+        });
+    },
+    
+    handleDelete: function () {
+        var topic = this.props.container.props.topic;
+        $.ajax({
+            url: "DeleteMessage.php",
+            method: "post",
+            data: {id: this.props.id},
+            dataType: "text",
+            cache: false,
+            success: topic.getMessages,
+            error: function(xhr, status, err) {
+                console.error("ERROR: deleteMessage: ", status, err.toString());
+            }
+        });
     },
     
 	areButtonsVisible: function() {
@@ -60,13 +84,10 @@ var MessageContainer = React.createClass({
         "use strict";
         var key = 0;
 		var container = this;
-        var deleteMessage = this.props.deleteMessage;
-        var editMessage = this.props.editMessage;
         var messages = this.props.data.map( function(value, index) {
             key++;
             return (
-                <Message key={key} container={container} id={value.id} avatar={value.avatar} userName={value.userName} 
-					text={value.text} posted={value.posted} deleteMessage={deleteMessage} editMessage={editMessage}/>
+                <Message key={key} container={container} id={value.id} avatar={value.avatar} userName={value.userName} text={value.text} posted={value.posted}/>
             );
         });
 
@@ -80,7 +101,17 @@ var MessageContainer = React.createClass({
 
 var MessageWriter = React.createClass({
     handleSend: function(event) {
-        this.props.sendMessage(this.refs.text.value);
+        $.ajax({
+            url: "SendMessage.php",
+            method: "post",
+            data: {msg: this.refs.text.value},
+            dataType: "text",
+            cache: false,
+            success: this.props.topic.getMessages,
+            error: function(xhr, status, err) {
+                console.error("ERROR: sendMessage: ", status, err.toString());
+            }
+        });
     }, 
     
     render: function() {
@@ -103,20 +134,6 @@ var Topic = React.createClass({
             title: "Test title",
             data: []
         };
-    },
-    
-    sendMessage: function(message) { 
-        $.ajax({
-            url: "SendMessage.php",
-            method: "post",
-            data: {msg: message},
-            dataType: "text",
-            cache: false,
-            success: this.getMessages,
-            error: function(xhr, status, err) {
-                console.error("ERROR: sendMessage: ", status, err.toString());
-            }
-        });
     },
     
     getTopic: function() {
@@ -153,34 +170,6 @@ var Topic = React.createClass({
         });
     },
     
-    deleteMessage: function(id) {
-        $.ajax({
-            url: "DeleteMessage.php",
-            method: "post",
-            data: {id: id},
-            dataType: "text",
-            cache: false,
-            success: this.getMessages,
-            error: function(xhr, status, err) {
-                console.error("ERROR: deleteMessage: ", status, err.toString());
-            }
-        });
-    },
-    
-    editMessage: function(id, text) {
-        $.ajax({
-            url: "EditMessage.php",
-            method: "post",
-            data: {id: id, text: text},
-            dataType: "text",
-            cache: false,
-            success: this.getMessages,
-            error: function(xhr, status, err) {
-                console.error("ERROR: editMessage: ", status, err.toString());
-            }
-        });
-    },
-    
     componentDidMount: function() {
         this.getTopic();
         this.getMessages();
@@ -191,8 +180,8 @@ var Topic = React.createClass({
         return (
             <div className="topic">
                 <h1>{this.state.title}</h1>
-				{this.props.page.state.userName !== "" ? <MessageWriter sendMessage={this.sendMessage}/> : null}
-                <MessageContainer topic={this} data={this.state.data} deleteMessage={this.deleteMessage} editMessage={this.editMessage}/>
+				{this.props.page.state.userName !== "" ? <MessageWriter topic={this} /> : null}
+                <MessageContainer topic={this} data={this.state.data} />
             </div>
         );
     }
