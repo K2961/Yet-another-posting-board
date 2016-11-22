@@ -73,7 +73,6 @@ var Message = React.createClass({
 						}
 					</div>
                 </div>
-                
             </div>
         );
     }
@@ -207,8 +206,8 @@ var LoginPopup = React.createClass({
                     </tr>
                     <tr>
                         <td>Password</td>
-                        <td><input ref="password" type="text"></input></td>
-                    </tr>     
+                        <td><input ref="password" type="password"></input></td>
+                    </tr>
                 </table>
                 <button onClick={this.handleLogin}>Log in</button>
                 <button onClick={this.handleCancel}>Cancel</button>    
