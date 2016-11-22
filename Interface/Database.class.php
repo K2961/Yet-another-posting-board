@@ -1,6 +1,6 @@
 <?php
 require_once("PathConfig.php");
-require_once(DB_INIT_PATH);
+require_once(DATABASE_INIT_PATH);
 require_once(PASSWORD_LIB_PATH);
 
 class Database
