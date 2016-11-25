@@ -101,6 +101,19 @@ SQL;
         $statement->execute();
     }
 	
+function deleteTopic($id, $userId)
+    {
+        $query = <<<SQL
+        DELETE FROM Topic 
+        WHERE Id = :id AND UserId = :userId;
+SQL;
+		
+        $statement = $this->pdo->prepare($query);
+        $statement->bindValue(':id', id, PDO::PARAM_INT);
+        $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+        $statement->execute();
+    }
+	
     function getMessages($topicId)
     {
         $messages = array();

@@ -15,14 +15,14 @@ var Message = React.createClass({
         var id = this.props.id;
         var text = this.refs.messageEditor.value;
         $.ajax({
-            url: "EditMessage.php",
+            url: "Action/EditMessage.php",
             method: "post",
             data: {id: id, text: text},
             dataType: "text",
             cache: false,
             success: topic.getMessages,
-            error: function(xhr, status, err) {
-                console.error("ERROR: editMessage: ", status, err.toString());
+            error: function(xhr, status, error) {
+                console.error("Message.handleSave: ", status, error.toString());
             }
         });
     },
@@ -30,14 +30,14 @@ var Message = React.createClass({
     handleDelete: function () {
         var topic = this.props.container.props.topic;
         $.ajax({
-            url: "DeleteMessage.php",
+            url: "Action/DeleteMessage.php",
             method: "post",
             data: {id: this.props.id},
             dataType: "text",
             cache: false,
             success: topic.getMessages,
-            error: function(xhr, status, err) {
-                console.error("ERROR: deleteMessage: ", status, err.toString());
+            error: function(xhr, status, error) {
+                console.error("Message.handleDelete: ", status, error.toString());
             }
         });
     },
@@ -99,14 +99,14 @@ var MessageContainer = React.createClass({
 var MessageWriter = React.createClass({
     handleSend: function(event) {
         $.ajax({
-            url: "SendMessage.php",
+            url: "Action/SendMessage.php",
             method: "post",
-            data: {msg: this.refs.text.value},
+            data: {message: this.refs.text.value},
             dataType: "text",
             cache: false,
             success: this.props.topic.getMessages,
-            error: function(xhr, status, err) {
-                console.error("ERROR: sendMessage: ", status, err.toString());
+            error: function(xhr, status, error) {
+                console.error("MessageWriter.handleSend: ", status, error.toString());
             }
         });
     }, 
@@ -128,7 +128,7 @@ var MessageWriter = React.createClass({
 var TopicWriter = React.createClass({
     handleSend: function(event) {
         $.ajax({
-            url: "SendTopic.php",
+            url: "Action/SendTopic.php",
             method: "post",
             data: {title: this.refs.title.value},
             dataType: "text",
@@ -136,8 +136,8 @@ var TopicWriter = React.createClass({
             success: function() {
 				
 			},
-            error: function(xhr, status, err) {
-                console.error("ERROR: sendTopic: ", status, err.toString());
+            error: function(xhr, status, error) {
+                console.error("TopicWriter.handleSend: ", status, error.toString());
             }
         });
     },
@@ -166,7 +166,7 @@ var Topic = React.createClass({
     
     getTopic: function() {
         $.ajax({
-            url: "GetTopic.php",
+            url: "Action/GetTopic.php",
             dataType: "json",
             cache: false,
             success: function(data) {
@@ -175,15 +175,15 @@ var Topic = React.createClass({
                     data: this.state.data
                 });
             }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("ERROR: getMessages: ", status, err.toString());
+            error: function(xhr, status, error) {
+                console.error("Topic.getTopic: ", status, error.toString());
             }
         });
     },
     
     getMessages: function() {
 		$.ajax({
-            url: "GetMessages.php",
+            url: "Action/GetMessages.php",
             dataType: "json",
             cache: false,
             success: function(data) {
@@ -192,15 +192,15 @@ var Topic = React.createClass({
                     data: data
                 });
             }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("ERROR: getMessages: ", status, err.toString());
+            error: function(xhr, status, error) {
+                console.error("Topic.getMessages: ", status, error.toString());
             }
         });
     },
     
 	delete: function() {
         $.ajax({
-            url: "DeleteTopic.php",
+            url: "Action/DeleteTopic.php",
             method: "post",
             data: {id: this.props.id},
             dataType: "text",
@@ -208,8 +208,8 @@ var Topic = React.createClass({
             success: function() {
 				
 			},
-            error: function(xhr, status, err) {
-                console.error("ERROR: Topic.delete: ", status, err.toString());
+            error: function(xhr, status, error) {
+                console.error("Topic.delete: ", status, error.toString());
             }
         });
 	},
@@ -224,7 +224,7 @@ var Topic = React.createClass({
         return (
             <div className="topic">
                 <h1>{this.state.title}</h1>
-				<button onClick={}>Delete</button>
+				<button onClick={this.delete}>Delete</button>
 				{this.props.page.state.userName !== "" ? <MessageWriter topic={this} /> : null}
                 <MessageContainer topic={this} data={this.state.data} />
             </div>
@@ -245,7 +245,7 @@ var TopicList = React.createClass({
 	
 	getTopics: function() {
 		$.ajax({
-            url: "GetTopics.php",
+            url: "Action/GetTopics.php",
             dataType: "json",
             cache: false,
             success: function(data) {
@@ -253,8 +253,8 @@ var TopicList = React.createClass({
                     data: data
                 });
             }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("ERROR: getTopics: ", status, err.toString());
+            error: function(xhr, status, error) {
+                console.error("TopicList.getTopics: ", status, error.toString());
             }
         });
 	},
@@ -385,7 +385,7 @@ var LoginBar = React.createClass({
             isRegisterVisible: false
         });
         $.ajax({
-            url: "SendLogin.php",
+            url: "Action/SendLogin.php",
             method: "post",
             data: {name: name, password: password},
             dataType: "text",
@@ -394,8 +394,8 @@ var LoginBar = React.createClass({
 				var data = JSON.parse(json);
 				this.props.page.setState({userName: data.name});
             }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("ERROR: sendLogin: ", status, err.toString());
+            error: function(xhr, status, error) {
+                console.error("LoginBar.sendLogin: ", status, error.toString());
             }
         });
     },
@@ -406,7 +406,7 @@ var LoginBar = React.createClass({
             isRegisterVisible: false
         });
         $.ajax({
-            url: "SendRegistration.php",
+            url: "Action/SendRegistration.php",
             method: "post",
             data: {name: name, password: password},
             dataType: "text",
@@ -415,8 +415,8 @@ var LoginBar = React.createClass({
 				var data = JSON.parse(json);
 				this.props.page.setState({userName: data.name});
             }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("ERROR: sendRegistration: ", status, err.toString());
+            error: function(xhr, status, error) {
+                console.error("LoginBar.sendRegistration: ", status, error.toString());
             }
         });
     },
@@ -436,7 +436,7 @@ var LoginBar = React.createClass({
 var LogoutBar = React.createClass({
 	logout_onClick: function() {
 		$.ajax({
-            url: "SendLogout.php",
+            url: "Action/SendLogout.php",
             method: "post",
             data: {},
             dataType: "text",
@@ -444,8 +444,8 @@ var LogoutBar = React.createClass({
             success: function(data) {
 				this.props.page.setState({userName: ""});
             }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("ERROR: sendLogout: ", status, err.toString());
+            error: function(xhr, status, error) {
+                console.error("LogoutBar.sendLogout: ", status, error.toString());
             }
         });
 	},
@@ -477,7 +477,7 @@ var Page = React.createClass({
 				{this.state.userName === "" ? <LoginBar page={this} /> : <LogoutBar page={this} />}
 				<TopicWriter />
 				<TopicList />
-                <Topic page={this} />
+                <Topic page={this} id="1" />
             </div>
         );
     }
@@ -485,5 +485,5 @@ var Page = React.createClass({
 
 ReactDOM.render(
     <Page />,
-    document.getElementById("messages")
+    document.getElementById("page")
 );

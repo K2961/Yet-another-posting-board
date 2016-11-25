@@ -19,6 +19,6 @@ if(empty($_SERVER["HTTPS"]) || $_SERVER["HTTPS"] == "off"){
 	<script src="script.jsx" type="text/babel"></script>
 </head>
 <body>
-	<div id="messages"></div>
+	<div id="page"></div>
 </body>
 </html>
