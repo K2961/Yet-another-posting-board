@@ -101,18 +101,40 @@ SQL;
         $statement->execute();
     }
 	
-function deleteTopic($id, $userId)
-    {
-        $query = <<<SQL
-        DELETE FROM Topic 
-        WHERE Id = :id AND UserId = :userId;
+	function deleteTopic($id, $userId)
+	{
+		$query = <<<SQL
+		SELECT * FROM Topic
+		WHERE Id = :id AND UserId = :userId;
 SQL;
 		
-        $statement = $this->pdo->prepare($query);
-        $statement->bindValue(':id', id, PDO::PARAM_INT);
-        $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
-        $statement->execute();
-    }
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(":id", $id, PDO::PARAM_INT);
+		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
+		$statement->execute();
+		
+		$topicMatchesUser = $statement->fetch(PDO::FETCH_ASSOC);
+		if ($topicMatchesUser)
+		{
+			$query = <<<SQL
+			DELETE FROM Message
+			WHERE TopicId = :id;
+SQL;
+			
+			$statement = $this->pdo->prepare($query);
+			$statement->bindValue(":id", $id, PDO::PARAM_INT);
+			$statement->execute();
+			
+			$query = <<<SQL
+			DELETE FROM Topic
+			WHERE Id = :id;
+SQL;
+			
+			$statement = $this->pdo->prepare($query);
+			$statement->bindValue(":id", $id, PDO::PARAM_INT);
+			$statement->execute();
+		}
+	}
 	
     function getMessages($topicId)
     {

@@ -104,16 +104,16 @@ var MessageContainer = React.createClass({
 var MessageWriter = React.createClass({
     handleSend: function(event) {
 		"use strict";
-        $.ajax({
-            url: "Action/SendMessage.php",
-            method: "post",
-            data: {message: this.refs.text.value},
-            dataType: "text",
-            cache: false,
-            success: this.props.topic.getMessages,
-            error: function(xhr, status, error) {
-                console.error("MessageWriter.handleSend: ", status, error.toString());
-            }
+		$.ajax({
+			url: "Action/SendMessage.php",
+			method: "post",
+			data: {topicId: this.props.topic.props.id, message: this.refs.text.value},
+			dataType: "text",
+			cache: false,
+			success: this.props.topic.getMessages,
+			error: function(xhr, status, error) {
+				console.error("MessageWriter.handleSend: ", status, error.toString());
+			}
         });
     }, 
     
@@ -172,21 +172,22 @@ var Topic = React.createClass({
         };
     },
     
-    getTopic: function() {
+    getInfo: function() {
 		"use strict";
-        $.ajax({
-            url: "Action/GetTopic.php",
-            dataType: "json",
-            cache: false,
-            success: function(data) {
-                this.setState({
-                    title: data.title,
-                    data: this.state.data
-                });
-            }.bind(this),
-            error: function(xhr, status, error) {
-                console.error("Topic.getTopic: ", status, error.toString());
-            }
+		$.ajax({
+			url: "Action/GetTopic.php",
+			data: {id: this.props.id},
+			dataType: "json",
+			cache: false,
+			success: function(data) {
+				this.setState({
+					title: data.title,
+					data: this.state.data
+				});
+			}.bind(this),
+			error: function(xhr, status, error) {
+				console.error("Topic.getInfo: ", status, error.toString());
+			}
         });
     },
     
@@ -194,6 +195,7 @@ var Topic = React.createClass({
 		"use strict";
 		$.ajax({
             url: "Action/GetMessages.php",
+            data: {topicId: this.props.id},
             dataType: "json",
             cache: false,
             success: function(data) {
@@ -227,7 +229,7 @@ var Topic = React.createClass({
 	
     componentDidMount: function() {
 		"use strict";
-        this.getTopic();
+        this.getInfo();
         this.getMessages();
         //setInterval(this.getMessages, 5000);
     },
@@ -413,10 +415,9 @@ var LoginBar = React.createClass({
             url: "Action/SendLogin.php",
             method: "post",
             data: {name: name, password: password},
-            dataType: "text",
+            dataType: "json",
             cache: false,
-            success: function(json) {
-				var data = JSON.parse(json);
+            success: function(data) {
 				this.props.page.setState({userName: data.name});
             }.bind(this),
             error: function(xhr, status, error) {
@@ -435,11 +436,10 @@ var LoginBar = React.createClass({
             url: "Action/SendRegistration.php",
             method: "post",
             data: {name: name, password: password},
-            dataType: "text",
+            dataType: "json",
             cache: false,
-            success: function(json) {
-				var data = JSON.parse(json);
-				this.props.page.setState({userName: data.name});
+            success: function(data) {
+				this.props.page.setUserName(data.name);
             }.bind(this),
             error: function(xhr, status, error) {
                 console.error("LoginBar.sendRegistration: ", status, error.toString());
@@ -470,7 +470,7 @@ var LogoutBar = React.createClass({
             dataType: "text",
             cache: false,
             success: function(data) {
-				this.props.page.setState({userName: ""});
+				this.props.page.setUserName("");
             }.bind(this),
             error: function(xhr, status, error) {
                 console.error("LogoutBar.sendLogout: ", status, error.toString());
@@ -493,8 +493,40 @@ var Page = React.createClass({
     getInitialState: function() {
 		"use strict";
 		return ({
-			userName: ""
+			userName: "",
+			topicId: -1
 		});
+	},
+	
+	setUserName: function(userName) {
+		"use strict";
+		var state = this.state;
+		state.userName = userName;
+		this.setState(state);
+	},
+	
+	setTopicId: function(topicId) {
+		"use strict";
+		var state = this.state;
+		state.topicId = topicId;
+		this.setState(state);
+	},
+	
+	componentDidMount: function() {
+		"use strict";
+		$.ajax({
+            url: "Action/GetTopics.php",
+            dataType: "json",
+            cache: false,
+            success: function(data) {
+				if (data.length > 0) {
+					this.setTopicId(data[0].id);
+				}
+            }.bind(this),
+            error: function(xhr, status, error) {
+                console.error("Page.componentDidMount: ", status, error.toString());
+            }
+        });
 	},
 	
 	render: function() {
@@ -507,7 +539,7 @@ var Page = React.createClass({
 				{this.state.userName === "" ? <LoginBar page={this} /> : <LogoutBar page={this} />}
 				<TopicWriter />
 				<TopicList />
-                <Topic page={this} id="1" />
+				{this.state.topicId > -1 ? <Topic page={this} id={this.state.topicId} /> : null}
             </div>
         );
     }

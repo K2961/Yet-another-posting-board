@@ -8,6 +8,6 @@ if ($userId === -1)
 
 require_once("Database.class.php");
 $database = new Database();
-$topicId = 1;
+$topicId = $_REQUEST["topicId"];
 $text = $_REQUEST["message"];
 $database->sendMessage($topicId, $userId, $text);
