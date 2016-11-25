@@ -182,7 +182,7 @@ var Topic = React.createClass({
     },
     
     getMessages: function() {
-        $.ajax({
+		$.ajax({
             url: "GetMessages.php",
             dataType: "json",
             cache: false,
@@ -198,6 +198,22 @@ var Topic = React.createClass({
         });
     },
     
+	delete: function() {
+        $.ajax({
+            url: "DeleteTopic.php",
+            method: "post",
+            data: {id: this.props.id},
+            dataType: "text",
+            cache: false,
+            success: function() {
+				
+			},
+            error: function(xhr, status, err) {
+                console.error("ERROR: Topic.delete: ", status, err.toString());
+            }
+        });
+	},
+	
     componentDidMount: function() {
         this.getTopic();
         this.getMessages();
@@ -208,6 +224,7 @@ var Topic = React.createClass({
         return (
             <div className="topic">
                 <h1>{this.state.title}</h1>
+				<button onClick={}>Delete</button>
 				{this.props.page.state.userName !== "" ? <MessageWriter topic={this} /> : null}
                 <MessageContainer topic={this} data={this.state.data} />
             </div>
@@ -272,7 +289,7 @@ var TopicInfo = React.createClass({
 	render: function(){
 		return (
 			<tr className="topicInfo">
-				<td>{this.props.title}</td>
+				<td><a href="#">{this.props.title}</a></td>
 				<td>{this.props.userName}</td>
 				<td>{this.props.posted}</td>
 			</tr>
