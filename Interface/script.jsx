@@ -265,6 +265,7 @@ var TopicInfo = React.createClass({
 				<td><a href="#" onClick={this.handleClick}>{this.props.title}</a></td>
 				<td>{this.props.userName}</td>
 				<td>{this.props.posted}</td>
+				<td>{this.props.lastPost}</td>
 			</tr>
 		);
 	}
@@ -307,7 +308,7 @@ var TopicList = React.createClass({
 		var topics = this.state.data.map( function(value, index) {
             key++;
             return (
-                <TopicInfo key={key} id={value.id} list={list} title={value.title} userName={value.userName} posted={value.posted}/>
+                <TopicInfo key={key} id={value.id} list={list} title={value.title} userName={value.userName} posted={value.posted} lastPost={value.lastPost} />
             );
         });
         return (
@@ -317,7 +318,8 @@ var TopicList = React.createClass({
 						<tr>
 							<th>Title</th>
 							<th>Poster</th>
-							<th>Posted</th>
+							<th>Original post</th>
+							<th>Last post</th>
 						</tr>
 					</thead>
 					<tbody>{topics}</tbody>

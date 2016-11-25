@@ -73,16 +73,24 @@ SQL;
     {
         $topics = array();
         $statement = $this->pdo->query("SELECT * FROM Topic");
-        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
+        while ($topic = $statement->fetch(PDO::FETCH_ASSOC)) 
         {
-			$userId = $row["UserId"];
+			$userId = $topic["UserId"];
             $user = $this->getUser($userId);
 			
+			$messages = $this->getMessages($topic["Id"]);
+			$lastPost = $topic["Posted"];
+			if (count($messages) > 0)
+			{
+				$lastPost = $messages[0]["posted"];
+			}
+			
             $topics[] = array(
-				"id" => $row["Id"],
-                "title" => $row["Title"],
+				"id" => $topic["Id"],
+                "title" => $topic["Title"],
 				"userName" => $user["Name"],
-				"posted" => $row["Posted"]
+				"posted" => $topic["Posted"],
+				"lastPost" => $lastPost
             );
         }
         return $topics;
