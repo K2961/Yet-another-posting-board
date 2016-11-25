@@ -80,10 +80,10 @@ var Message = React.createClass({
 
 var MessageContainer = React.createClass({                                         
     render: function () {
-        "use strict";
-        var key = 0;
+		"use strict";
+		var key = 0;
 		var container = this;
-        var messages = this.props.data.map( function(value, index) {
+		var messages = this.props.data.map( function(value, index) {
             key++;
             return (
                 <Message key={key} container={container} id={value.id} avatar={value.avatar} userName={value.userName} text={value.text} posted={value.posted}/>
@@ -184,6 +184,71 @@ var Topic = React.createClass({
             </div>
         );
     }
+});
+
+var TopicList = React.createClass({
+    getInitialState: function() {
+        return {
+			data: []
+        };
+	},
+	
+	componentDidMount: function() {
+		this.getTopics();	
+	},
+	
+	getTopics: function() {
+		$.ajax({
+            url: "GetTopics.php",
+            dataType: "json",
+            cache: false,
+            success: function(data) {
+                this.setState({
+                    data: data
+                });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("ERROR: getTopics: ", status, err.toString());
+            }
+        });
+	},
+	
+	render: function() {
+		"use strict";
+		var key = 0;
+		var topics = this.state.data.map( function(value, index) {
+            key++;
+            return (
+                <TopicInfo key={key} id={value.id} title={value.title} userName={value.userName} posted={value.posted}/>
+            );
+        });
+        return (
+            <div className="topicList">
+				<table>
+					<thead>
+						<tr>
+							<th>Title</th>
+							<th>Poster</th>
+							<th>Posted</th>
+						</tr>
+					</thead>
+					<tbody>{topics}</tbody>
+				</table>
+            </div>
+        );
+    }
+});
+
+var TopicInfo = React.createClass({
+	render: function(){
+		return (
+			<tr className="topicInfo">
+				<td>{this.props.title}</td>
+				<td>{this.props.userName}</td>
+				<td>{this.props.posted}</td>
+			</tr>
+		);
+	}
 });
 
 var LoginPopup = React.createClass({
@@ -364,6 +429,7 @@ var Page = React.createClass({
                     <h1>Welcome to test forum</h1>
                 </div>
 				{this.state.userName === "" ? <LoginBar page={this} /> : <LogoutBar page={this} />}
+				<TopicList />
                 <Topic page={this} />
             </div>
         );

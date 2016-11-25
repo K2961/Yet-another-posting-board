@@ -69,6 +69,25 @@ SQL;
         return $topic;
     }
     
+    function getTopics()
+    {
+        $topics = array();
+        $statement = $this->pdo->query("SELECT * FROM Topic");
+        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
+        {
+			$userId = $row["UserId"];
+            $user = $this->getUser($userId);
+			
+            $topics[] = array(
+				"id" => $row["Id"],
+                "title" => $row["Title"],
+				"userName" => $user["Name"],
+				"posted" => $row["Posted"]
+            );
+        }
+        return $topics;
+    }
+    
     function getMessages($topicId)
     {
         $messages = array();
@@ -79,11 +98,11 @@ SQL;
             $user = $this->getUser($userId);
 
             $messages[] = array (
-                "id" => $row["Id"],
-                "avatar" => $user["AvatarUrl"],
-                "userName" => $user["Name"],
-                "text" => $row["Text"],
-                "posted" => $row["Posted"]
+				"id" => $row["Id"],
+				"avatar" => $user["AvatarUrl"],
+				"userName" => $user["Name"],
+				"text" => $row["Text"],
+				"posted" => $row["Posted"]
             );
         }
         return $messages;
