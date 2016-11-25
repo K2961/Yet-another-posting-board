@@ -1,15 +1,18 @@
 var Message = React.createClass({
     getInitialState: function () {
+		"use strict";
         return ({
             isEditorVisible: false
         });
     },
     
     handleEdit: function () {
+		"use strict";
         this.setState({isEditorVisible: ! this.state.isEditorVisible});
     },
     
     handleSave: function () {
+		"use strict";
         this.setState({isEditorVisible: ! this.state.isEditorVisible});
         var topic = this.props.container.props.topic;
         var id = this.props.id;
@@ -28,6 +31,7 @@ var Message = React.createClass({
     },
     
     handleDelete: function () {
+		"use strict";
         var topic = this.props.container.props.topic;
         $.ajax({
             url: "Action/DeleteMessage.php",
@@ -43,6 +47,7 @@ var Message = React.createClass({
     },
     
 	areButtonsVisible: function() {
+		"use strict";
 		var page = this.props.container.props.topic.props.page;
 		return this.props.userName === page.state.userName;
 	},
@@ -98,6 +103,7 @@ var MessageContainer = React.createClass({
 
 var MessageWriter = React.createClass({
     handleSend: function(event) {
+		"use strict";
         $.ajax({
             url: "Action/SendMessage.php",
             method: "post",
@@ -127,6 +133,7 @@ var MessageWriter = React.createClass({
 
 var TopicWriter = React.createClass({
     handleSend: function(event) {
+		"use strict";
         $.ajax({
             url: "Action/SendTopic.php",
             method: "post",
@@ -158,6 +165,7 @@ var TopicWriter = React.createClass({
 
 var Topic = React.createClass({
     getInitialState: function() {
+		"use strict";
         return {
             title: "Test title",
             data: []
@@ -165,6 +173,7 @@ var Topic = React.createClass({
     },
     
     getTopic: function() {
+		"use strict";
         $.ajax({
             url: "Action/GetTopic.php",
             dataType: "json",
@@ -182,6 +191,7 @@ var Topic = React.createClass({
     },
     
     getMessages: function() {
+		"use strict";
 		$.ajax({
             url: "Action/GetMessages.php",
             dataType: "json",
@@ -199,6 +209,7 @@ var Topic = React.createClass({
     },
     
 	delete: function() {
+		"use strict";
         $.ajax({
             url: "Action/DeleteTopic.php",
             method: "post",
@@ -215,12 +226,14 @@ var Topic = React.createClass({
 	},
 	
     componentDidMount: function() {
+		"use strict";
         this.getTopic();
         this.getMessages();
         //setInterval(this.getMessages, 5000);
     },
     
     render: function() {
+		"use strict";
         return (
             <div className="topic">
                 <h1>{this.state.title}</h1>
@@ -234,16 +247,19 @@ var Topic = React.createClass({
 
 var TopicList = React.createClass({
     getInitialState: function() {
+		"use strict";
         return {
 			data: []
         };
 	},
 	
 	componentDidMount: function() {
+		"use strict";
 		this.getTopics();	
 	},
 	
 	getTopics: function() {
+		"use strict";
 		$.ajax({
             url: "Action/GetTopics.php",
             dataType: "json",
@@ -287,6 +303,7 @@ var TopicList = React.createClass({
 
 var TopicInfo = React.createClass({
 	render: function(){
+		"use strict";
 		return (
 			<tr className="topicInfo">
 				<td><a href="#">{this.props.title}</a></td>
@@ -299,10 +316,12 @@ var TopicInfo = React.createClass({
 
 var LoginPopup = React.createClass({
     handleCancel: function() {
+		"use strict";
         this.props.cancel();
     },
     
     handleLogin: function() {
+		"use strict";
         this.props.send(this.refs.username.value, this.refs.password.value);
     },
     
@@ -329,10 +348,12 @@ var LoginPopup = React.createClass({
 
 var RegisterPopup = React.createClass({
     handleCancel: function() {
+		"use strict";
         this.props.cancel();
     },
     
     handleRegister: function() {
+		"use strict";
         this.props.send(this.refs.username.value, this.refs.password.value);
     },
     
@@ -359,13 +380,15 @@ var RegisterPopup = React.createClass({
 
 var LoginBar = React.createClass({
 	getInitialState: function() {
+		"use strict";
         return ({
 			isLoginVisible: false,
 			isRegisterVisible: false
 		});
     },
     
-    login_onClick: function() {        
+    login_onClick: function() { 
+		"use strict";       
         this.setState({
             isLoginVisible: ! this.state.isLoginVisible,
             isRegisterVisible: false
@@ -373,6 +396,7 @@ var LoginBar = React.createClass({
     },
     
     register_onClick: function() {
+		"use strict";
         this.setState({
             isLoginVisible: false,
             isRegisterVisible: ! this.state.isRegisterVisible
@@ -380,6 +404,7 @@ var LoginBar = React.createClass({
     },
 	
 	sendLogin: function(name, password) {
+		"use strict";
         this.setState({
             isLoginVisible: false,
             isRegisterVisible: false
@@ -401,6 +426,7 @@ var LoginBar = React.createClass({
     },
     
     sendRegistration: function(name, password) { 
+		"use strict";
         this.setState({
             isLoginVisible: false,
             isRegisterVisible: false
@@ -422,6 +448,7 @@ var LoginBar = React.createClass({
     },
 	
 	render: function() {
+		"use strict";
 		return (
 			<div className="loginBar">
 				<button onClick={this.login_onClick}>Log in</button>
@@ -435,6 +462,7 @@ var LoginBar = React.createClass({
 
 var LogoutBar = React.createClass({
 	logout_onClick: function() {
+		"use strict";
 		$.ajax({
             url: "Action/SendLogout.php",
             method: "post",
@@ -451,6 +479,7 @@ var LogoutBar = React.createClass({
 	},
 	
 	render: function() {
+		"use strict";
 		return (
 			<div className="loginBar">
 				<button onClick={this.logout_onClick}>Log out</button>
@@ -462,6 +491,7 @@ var LogoutBar = React.createClass({
 
 var Page = React.createClass({
     getInitialState: function() {
+		"use strict";
 		return ({
 			userName: ""
 		});
