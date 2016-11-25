@@ -542,6 +542,17 @@ var Page = React.createClass({
 	componentDidMount: function() {
 		"use strict";
 		$.ajax({
+			url: "Action/GetSession.php",
+			dataType: "json",
+			cache: false,
+			success: function(session) {
+				this.setUserName(session.user.name);
+			}.bind(this),
+			error: function(xhr, status, error) {
+                console.error("Page.componentDidMount: ", status, error.toString());
+            }
+		});
+		$.ajax({
             url: "Action/GetTopics.php",
             dataType: "json",
             cache: false,
