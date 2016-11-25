@@ -138,10 +138,29 @@ var Topic = React.createClass({
 		"use strict";
         return {
             title: "Test title",
+			isMessageWriterVisible: false,
             data: []
         };
     },
     
+	setTitle: function(title) {
+		var state = this.state;
+		state.title = title;
+		this.setState(state);
+	},
+	
+	setMessageWriterVisible: function(isMessageWriterVisible) {
+		var state = this.state;
+		state.isMessageWriterVisible = isMessageWriterVisible;
+		this.setState(state);
+	},
+	
+	setData: function(data) {
+		var state = this.state;
+		state.data = data;
+		this.setState(state);
+	},
+	
     getInfo: function(id) {
 		"use strict";
 		$.ajax({
@@ -150,10 +169,7 @@ var Topic = React.createClass({
 			dataType: "json",
 			cache: false,
 			success: function(data) {
-				this.setState({
-					title: data.title,
-					data: this.state.data
-				});
+				this.setTitle(data.title);
 			}.bind(this),
 			error: function(xhr, status, error) {
 				console.error("Topic.getInfo: ", status, error.toString());
@@ -169,10 +185,7 @@ var Topic = React.createClass({
             dataType: "json",
             cache: false,
             success: function(data) {
-                this.setState({
-                    title: this.state.title,
-                    data: data
-                });
+				this.setData(data);
             }.bind(this),
             error: function(xhr, status, error) {
                 console.error("Topic.getMessages: ", status, error.toString());
@@ -180,6 +193,10 @@ var Topic = React.createClass({
         });
     },
     
+	toggleMessageWriterVisibility: function() {
+		this.setMessageWriterVisible(!this.state.isMessageWriterVisible);	
+	},
+	
 	delete: function() {
 		"use strict";
         $.ajax({
@@ -214,8 +231,14 @@ var Topic = React.createClass({
         return (
             <div className="topic">
                 <h1>{this.state.title}</h1>
-				{this.props.page.state.userName !== "" ? <button onClick={this.delete}>Delete</button> : null}
-				{this.props.page.state.userName !== "" ? <MessageWriter topic={this} /> : null}
+				{this.props.page.state.userName !== "" ? 
+					<div>
+						<button onClick={this.delete}>Delete</button> 
+						<button onClick={this.toggleMessageWriterVisibility}>New message</button>
+						{this.state.isMessageWriterVisible ? <MessageWriter topic={this} /> : null}
+					</div>
+					: null
+				}
                 <MessageContainer topic={this} data={this.state.data} />
             </div>
         );
