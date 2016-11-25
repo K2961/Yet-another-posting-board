@@ -139,7 +139,17 @@ SQL;
     function getMessages($topicId)
     {
         $messages = array();
-        $statement = $this->pdo->query("SELECT * FROM Message ORDER BY Posted DESC");
+		
+		$query = <<<SQL
+		SELECT * FROM Message
+		WHERE TopicId = :topicId
+		ORDER BY Posted DESC;
+SQL;
+		
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(":topicId", $topicId, PDO::PARAM_STR);
+		$statement->execute();
+		
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
         {
             $userId = $row["UserId"];
