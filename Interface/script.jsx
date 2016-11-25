@@ -214,7 +214,7 @@ var Topic = React.createClass({
         return (
             <div className="topic">
                 <h1>{this.state.title}</h1>
-				<button onClick={this.delete}>Delete</button>
+				{this.props.page.state.userName !== "" ? <button onClick={this.delete}>Delete</button> : null}
 				{this.props.page.state.userName !== "" ? <MessageWriter topic={this} /> : null}
                 <MessageContainer topic={this} data={this.state.data} />
             </div>
@@ -335,7 +335,7 @@ var Forum = React.createClass({
 	render: function() {
 		return (
 			<div className="forum">
-				<TopicWriter forum={this} />
+				{this.props.page.state.userName !== "" ? <TopicWriter forum={this} /> : null}
 				<TopicList ref="topicList" forum={this} />
 			</div>
 		);
