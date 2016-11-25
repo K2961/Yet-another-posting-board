@@ -88,6 +88,19 @@ SQL;
         return $topics;
     }
     
+	function sendTopic($userId, $title)
+    {
+        $query = <<<SQL
+        INSERT INTO Topic(UserId, ParentId, Title, Posted)
+        VALUES (:userId, NULL, :title, NOW());
+SQL;
+        
+        $statement = $this->pdo->prepare($query);
+        $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+        $statement->bindValue(':title', $title, PDO::PARAM_STR);
+        $statement->execute();
+    }
+	
     function getMessages($topicId)
     {
         $messages = array();

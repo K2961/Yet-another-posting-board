@@ -50,30 +50,28 @@ var Message = React.createClass({
     render: function () {
         "use strict";
         return (
-            <div>
-                <div className="message">
-                    <div className="userInfo">
-                        <img className="avatar" src={this.props.avatar}></img>
-                        <p className="userName">{this.props.userName}</p>
-                    </div>
-                    <div className="textContainer">
-                        {this.state.isEditorVisible ? <textarea ref="messageEditor" className="messageEditor" defaultValue={this.props.text}></textarea> : null}
-                        {! this.state.isEditorVisible ? <p className="text">{this.props.text}</p> : null}
-                    </div>
-					
-					<div className="messageButtons">
-						{ this.props.posted }
-						{ this.areButtonsVisible() ?
-							<div>
-								{! this.state.isEditorVisible ? <button onClick={this.handleEdit}>Edit</button> : null}
-								{this.state.isEditorVisible ? <button onClick={this.handleSave}>Save</button> : null}
-								<button onClick={this.handleDelete}>Delete</button>
-							</div>
-							: null
-						}
-					</div>
-                </div>
-            </div>
+			<div className="message">
+				<div className="userInfo">
+					<img className="avatar" src={this.props.avatar}></img>
+					<p className="userName">{this.props.userName}</p>
+				</div>
+				<div className="textContainer">
+					{this.state.isEditorVisible ? <textarea ref="messageEditor" className="messageEditor" defaultValue={this.props.text}></textarea> : null}
+					{! this.state.isEditorVisible ? <p className="text">{this.props.text}</p> : null}
+				</div>
+
+				<div className="messageButtons">
+					{ this.props.posted }
+					{ this.areButtonsVisible() ?
+						<div>
+							{! this.state.isEditorVisible ? <button onClick={this.handleEdit}>Edit</button> : null}
+							{this.state.isEditorVisible ? <button onClick={this.handleSave}>Save</button> : null}
+							<button onClick={this.handleDelete}>Delete</button>
+						</div>
+						: null
+					}
+				</div>
+			</div>
         );
     }
 });
@@ -114,7 +112,7 @@ var MessageWriter = React.createClass({
     }, 
     
     render: function() {
-        "use strict";
+		"use strict";
         return(
             <div className="messageWriter">
                 <textarea ref="text" placeholder="Text here" />
@@ -125,6 +123,37 @@ var MessageWriter = React.createClass({
             </div>
         );
     }
+});
+
+var TopicWriter = React.createClass({
+    handleSend: function(event) {
+        $.ajax({
+            url: "SendTopic.php",
+            method: "post",
+            data: {title: this.refs.title.value},
+            dataType: "text",
+            cache: false,
+            success: function() {
+				
+			},
+            error: function(xhr, status, err) {
+                console.error("ERROR: sendTopic: ", status, err.toString());
+            }
+        });
+    },
+	
+	render: function() {
+		"use strict";
+        return(
+            <div className="topicWriter">
+                <input type="text" ref="title" placeholder="Title here" />
+                <div className="topicWriterButtons">
+                    <button onClick={this.handleSend}>Send</button>
+                    <button>Clear</button>
+                </div> 
+            </div>
+        );
+	}
 });
 
 var Topic = React.createClass({
@@ -429,6 +458,7 @@ var Page = React.createClass({
                     <h1>Welcome to test forum</h1>
                 </div>
 				{this.state.userName === "" ? <LoginBar page={this} /> : <LogoutBar page={this} />}
+				<TopicWriter />
 				<TopicList />
                 <Topic page={this} />
             </div>
