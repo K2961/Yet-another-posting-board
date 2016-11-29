@@ -96,15 +96,16 @@ SQL;
         return $topics;
     }
     
-	function sendTopic($userId, $title)
+	function sendTopic($userId, $forumId, $title)
     {
         $query = <<<SQL
-        INSERT INTO Topic(UserId, ParentId, Title, Posted)
-        VALUES (:userId, NULL, :title, NOW());
+        INSERT INTO Topic(UserId, ForumId, Title, Posted)
+        VALUES (:userId, :forumId, :title, NOW());
 SQL;
         
         $statement = $this->pdo->prepare($query);
         $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+        $statement->bindValue(':forumId', $userId, PDO::PARAM_INT);
         $statement->bindValue(':title', $title, PDO::PARAM_STR);
         $statement->execute();
     }
@@ -176,7 +177,11 @@ SQL;
     
     function getUser($userId)
     {
-        $statement = $this->pdo->query("SELECT * FROM User WHERE Id=$userId");
+		$sql = "SELECT * FROM User WHERE Id=:id";
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(":id", $userId, PDO::PARAM_INT);
+		$statement->execute();
+		
         if ($row = $statement->fetch(PDO::FETCH_ASSOC))
         {
             return $row;
@@ -184,6 +189,48 @@ SQL;
         return null;
     }
     
+	function addForum($title)
+	{
+		$sql = <<<SQL
+		INSERT INTO Forum(Title, Created)
+		VALUES (:title, NOW());
+SQL;
+		
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(":title", $title, PDO::PARAM_STR);
+		$statement->execute();
+		
+		$sql = <<<SQL
+		SELECT * FROM Forum WHERE Title = :title;
+SQL;
+		
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(":title", $title, PDO::PARAM_STR);
+		$statement->execute();
+		
+		if ($row = $statement->fetch(PDO::FETCH_ASSOC))
+        {
+			$forum = array(
+				"id" => $row["Id"],
+			);
+			return $forum;
+        }
+        return null;
+	}
+	
+	function addModerator($userId, $forumId)
+	{
+		$sql = <<<SQL
+		INSERT INTO Moderator(UserId, ForumId)
+		VALUES (:userId, :forumId);
+SQL;
+		
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
+		$statement->bindValue(":forumId", $forumId, PDO::PARAM_INT);
+		$statement->execute();
+	}
+	
     function addUser($name, $password, $avatarUrl)
     {	
 		$passwordHash = $this->passwordLib->createPasswordHash($password,  '$2a$', array('cost' => 12));
@@ -225,4 +272,14 @@ SQL;
         }
         return null;
     }
+	
+	function deleteAll()
+	{
+		$this->pdo->query("DELETE FROM Moderator");
+		$this->pdo->query("DELETE FROM Ban");
+		$this->pdo->query("DELETE FROM Message");
+		$this->pdo->query("DELETE FROM Topic");
+		$this->pdo->query("DELETE FROM Forum");
+		$this->pdo->query("DELETE FROM User");
+	}
 }
