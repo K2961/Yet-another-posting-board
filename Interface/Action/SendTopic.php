@@ -9,4 +9,4 @@ if ($userId === -1)
 require_once("Database.class.php");
 $database = new Database();
 $title = $_REQUEST["title"];
-$database->sendTopic($userId, $title);
+$database->sendTopic($userId, 1, $title);

@@ -105,7 +105,7 @@ SQL;
         
         $statement = $this->pdo->prepare($query);
         $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
-        $statement->bindValue(':forumId', $userId, PDO::PARAM_INT);
+        $statement->bindValue(':forumId', $forumId, PDO::PARAM_INT);
         $statement->bindValue(':title', $title, PDO::PARAM_STR);
         $statement->execute();
     }
