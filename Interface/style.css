@@ -1,9 +1,15 @@
-
 .message{
     border: 0.063em solid black;
+	clear: both;
+	overflow: auto;
 }
-.userInfo{
-    float: left;
+.messageLeft{
+	float: left;
+}
+.messageRight{
+	float: left;
+	width: calc(100% - 10em);
+	margin: 0.3em;
 }
 .avatar{
     border: 0.06em solid black;
@@ -11,32 +17,52 @@
     width: 8em;
     height: 8em;
 }
-.userName{
-    margin-top: 0;
-    margin-left: 0.3em;
-    margin-bottom: 1em;
-    padding: 0;
+.messageText{
+	margin-bottom: 0.3em;
 }
-.textContainer{
-    float: left;
+.messageBar{
+	padding: 0.5em;
+	margin-bottom: 1em;
+	border: 0.06em solid black;
+	overflow: auto;
 }
-.messageEditor{
-    width: 100%;
-    height: 100%;
+.messageInfo{
+	list-style-type: none;
+	float: left;
+	padding: 0;
+	margin: 0;
+}
+.messageInfo li{
+	display: inline-block;
+	padding-right: 1em;
 }
 .messageButtons{
-    clear: both;
-    border-top: 0.06em solid black;
-    margin: 0.3em;
+	float: right;
+}
+.topicList th, td{
+	border: 1px solid black;
+	padding: 0.5em;
+	width: 25%;
+}
+.topicList{
+	margin-left: auto;
+	margin-right: auto;
+	border: 0.06em solid black;
+	padding: 0;
+}
+.topicList table{
+	width: 100%;
 }
 .topic{
-    padding: 0.3em;
+    padding: 0;
     border: 0.06em solid black;
-    margin: 0.3em;
+    margin-left: auto;
+	margin-right: auto;
 }
 .messageWriter textarea{
-    max-width: 20em;
-    max-height: 20em;
+    width: 98%;
+	max-width: 99%;
+	height: 10em;
     float: left;
     border: 0.06em solid black;
 }
@@ -48,8 +74,8 @@
     visibility: visible;
     border: 1px solid black;
     position: fixed;
-    top: 10em;
-    left: 10em;
+    top: 50%;
+    left: 50%;
     background-color: lightgray;
     opacity: 1;
 }
@@ -57,17 +83,38 @@
     visibility: visible;
     border: 1px solid black;
     position: fixed;
-    top: 10em;
-    left: 10em;
+    top: 50%;
+    left: 50%;
     background-color: lightgray;
     opacity: 1;
 }
 .loginBar{
-    clear: both;
     border: 0.06em solid black;
+	overflow: auto;
+	margin-left: auto;
+	margin-right: auto;
+}
+.loginButtons{
+	float: right;
 }
 .pageHeader{
     clear: both;
+	padding: 2em;
+	text-align: center;
+	font-size: 1em;
     max-height: 17.5em;
-    background-color: darkseagreen;
+	height: 5em;
+    background-color: lightskyblue;
+}
+.pageContent{
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+}
+.page{
+	background: lightBlue; /* For browsers that do not support gradients */
+	background: -webkit-linear-gradient(white, lightBlue); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(white, lightBlue); /* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(white, lightBlue); /* For Firefox 3.6 to 15 */
+	background: linear-gradient(white, lightBlue); /* Standard syntax */
 }

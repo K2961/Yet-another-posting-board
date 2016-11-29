@@ -56,25 +56,28 @@ var Message = React.createClass({
         "use strict";
         return (
 			<div className="message">
-				<div className="userInfo">
+				<div className="messageLeft">
 					<img className="avatar" src={this.props.avatar}></img>
-					<p className="userName">{this.props.userName}</p>
 				</div>
-				<div className="textContainer">
-					{this.state.isEditorVisible ? <textarea ref="messageEditor" className="messageEditor" defaultValue={this.props.text}></textarea> : null}
-					{! this.state.isEditorVisible ? <p className="text">{this.props.text}</p> : null}
-				</div>
-
-				<div className="messageButtons">
-					{ this.props.posted }
-					{ this.areButtonsVisible() ?
-						<div>
-							{! this.state.isEditorVisible ? <button onClick={this.handleEdit}>Edit</button> : null}
-							{this.state.isEditorVisible ? <button onClick={this.handleSave}>Save</button> : null}
-							<button onClick={this.handleDelete}>Delete</button>
-						</div>
-						: null
-					}
+				<div className="messageRight">
+					<div className="messageBar">
+						<ul className="messageInfo">
+							<li>{this.props.userName}</li>
+							<li>{ this.props.posted }</li>
+						</ul>
+						{ this.areButtonsVisible() ?
+							<div className="messageButtons">
+								{! this.state.isEditorVisible ? <button onClick={this.handleEdit}>Edit</button> : null}
+								{this.state.isEditorVisible ? <button onClick={this.handleSave}>Save</button> : null}
+								<button onClick={this.handleDelete}>Delete</button>
+							</div>
+							: null
+						}
+					</div>
+					<div className="messageText">
+						{this.state.isEditorVisible ? <textarea ref="messageEditor" className="messageEditor" defaultValue={this.props.text}></textarea> : null}
+						{! this.state.isEditorVisible ? <p className="text">{this.props.text}</p> : null}
+					</div>
 				</div>
 			</div>
         );
@@ -265,7 +268,8 @@ var TopicWriter = React.createClass({
 		"use strict";
         return(
             <div className="topicWriter">
-                <input type="text" ref="title" placeholder="Title here" />
+                Post new topic<br/>
+				<input type="text" ref="title" placeholder="Title here" />
                 <div className="topicWriterButtons">
                     <button onClick={this.handleSend}>Send</button>
                     <button>Clear</button>
@@ -502,8 +506,10 @@ var LoginBar = React.createClass({
 		"use strict";
 		return (
 			<div className="loginBar">
-				<button onClick={this.login_onClick}>Log in</button>
-				<button onClick={this.register_onClick}>Register</button>
+				<div className="loginButtons">
+					<button onClick={this.login_onClick} >Log in</button>
+					<button onClick={this.register_onClick}>Register</button>
+				</div>
 				{this.state.isRegisterVisible ? <RegisterPopup send={this.sendRegistration} cancel={this.register_onClick} /> : null}
 				{this.state.isLoginVisible ? <LoginPopup send={this.sendLogin} cancel={this.login_onClick} /> : null}
 			</div>
@@ -533,8 +539,10 @@ var LogoutBar = React.createClass({
 		"use strict";
 		return (
 			<div className="loginBar">
-				<button onClick={this.logout_onClick}>Log out</button>
-				{this.props.page.state.userName}
+				<div className="loginButtons">
+					Logged in as: {this.props.page.state.userName}
+					<button onClick={this.logout_onClick}>Log out</button>
+				</div>
 			</div>
 		);
 	}
@@ -597,11 +605,13 @@ var Page = React.createClass({
         return (
             <div className="page">
                 <div className="pageHeader">
-                    <h1>Welcome to test forum</h1>
+                    <h1>Yet Another Posting Board</h1>
                 </div>
-				{this.state.userName === "" ? <LoginBar page={this} /> : <LogoutBar page={this} />}
-				<Forum ref="forum" page={this}/>
-				{this.state.topicId > -1 ? <Topic ref="topic" page={this} id={this.state.topicId} /> : null}
+				<div className="pageContent">
+					{this.state.userName === "" ? <LoginBar page={this} /> : <LogoutBar page={this} />}
+					<Forum ref="forum" page={this}/>
+					{this.state.topicId > -1 ? <Topic ref="topic" page={this} id={this.state.topicId} /> : null}
+				</div>
             </div>
         );
     }
