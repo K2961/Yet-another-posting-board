@@ -1,5 +1,5 @@
 .message{
-    border: 0.063em solid black;
+	border: 0.063em solid black;
 	clear: both;
 	overflow: auto;
 }
@@ -12,10 +12,10 @@
 	margin: 0.3em;
 }
 .avatar{
-    border: 0.06em solid black;
-    margin: 0.3em;
-    width: 8em;
-    height: 8em;
+	border: 0.06em solid black;
+	margin: 0.3em;
+	width: 8em;
+	height: 8em;
 }
 .messageText{
 	margin-bottom: 0.3em;
@@ -59,42 +59,42 @@
 	width: 100%;
 }
 .topic{
-    padding: 0;
-    border: 0.06em solid black;
-    margin-left: auto;
+	padding: 0;
+	border: 0.06em solid black;
+	margin-left: auto;
 	margin-right: auto;
 }
 .messageWriter textarea{
-    width: 98%;
+	width: 98%;
 	max-width: 99%;
 	height: 10em;
-    float: left;
-    border: 0.06em solid black;
+	float: left;
+	border: 0.06em solid black;
 }
 .writerButtons{
-    clear: both;
-    margin: 0.3em;
+	clear: both;
+	margin: 0.3em;
 }
 .registerPopup{
-    visibility: visible;
-    border: 1px solid black;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    background-color: lightblue;
-    opacity: 1;
+	visibility: visible;
+	border: 1px solid black;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	background-color: lightblue;
+	opacity: 1;
 }
 .loginPopup{
-    visibility: visible;
-    border: 1px solid black;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    background-color: lightblue;
-    opacity: 1;
+	visibility: visible;
+	border: 1px solid black;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	background-color: lightblue;
+	opacity: 1;
 }
 .loginBar{
-    border: 0.06em solid black;
+	border: 0.06em solid black;
 	overflow: auto;
 	margin-left: auto;
 	margin-right: auto;
@@ -103,13 +103,13 @@
 	float: right;
 }
 .pageHeader{
-    clear: both;
+	clear: both;
 	padding: 2em;
 	text-align: center;
 	font-size: 1em;
-    max-height: 17.5em;
+	max-height: 17.5em;
 	height: 5em;
-    background-color: lightskyblue;
+	background-color: lightskyblue;
 }
 .pageContent{
 	width: 80%;
