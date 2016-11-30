@@ -38,7 +38,6 @@ SQL;
         SET Text = :text
         WHERE Id = :messageId AND UserId = :userId;
 SQL;
-        
         $statement = $this->pdo->prepare($query);
         $statement->bindValue(':messageId', $messageId, PDO::PARAM_INT);
         $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
@@ -58,13 +57,26 @@ SQL;
         $statement->execute();
     }
     
-    function getTopic($topicId)
+    function getTopic($id)
     {
         $topic = array();
-        $statement = $this->pdo->query("SELECT * FROM Topic WHERE Id=$topicId");
+		
+		$query = <<<SQL
+        SELECT * FROM Topic 
+        WHERE Id = :id;
+SQL;
+		$statement = $this->pdo->prepare($query);
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
+        $statement->execute();
+		
+		
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
         {
+			$userId = $row["UserId"];
+            $user = $this->getUser($userId);
+			
             $topic["title"] = $row["Title"];
+			$topic["userName"] = $user["Name"];
         }
         return $topic;
     }

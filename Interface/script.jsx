@@ -114,7 +114,7 @@ var MessageWriter = React.createClass({
 		$.ajax({
 			url: "Action/SendMessage.php",
 			method: "post",
-			data: {topicId: this.props.topic.props.id, message: this.refs.text.value},
+			data: {topicId: this.props.topic.state.id, message: this.refs.text.value},
 			dataType: "text",
 			cache: false,
 			success: function() {
@@ -147,6 +147,7 @@ var Topic = React.createClass({
 		return {
 			id: -1,
 			title: "",
+			userName: "",
 			isMessageWriterVisible: false,
 			data: []
 		};
@@ -163,6 +164,13 @@ var Topic = React.createClass({
 		"use strict";
 		var state = this.state;
 		state.title = title;
+		this.setState(state);
+	},
+	
+	setUserName: function(userName) {
+		"use strict";
+		var state = this.state;
+		state.userName = userName;
 		this.setState(state);
 	},
 	
@@ -189,6 +197,7 @@ var Topic = React.createClass({
 			cache: false,
 			success: function(data) {
 				this.setTitle(data.title);
+				this.setUserName(data.userName);
 			}.bind(this),
 			error: function(xhr, status, error) {
 				console.error("Topic.getInfo: ", status, error.toString());
@@ -215,6 +224,12 @@ var Topic = React.createClass({
 	toggleMessageWriterVisibility: function() {
 		"use strict";
 		this.setMessageWriterVisible(!this.state.isMessageWriterVisible);	
+	},
+	
+	isDeleteButtonVisible: function() {
+		"use strict";
+		var page = this.props.page;
+		return this.state.userName === page.state.userName;
 	},
 	
 	delete: function() {
@@ -254,7 +269,7 @@ var Topic = React.createClass({
 				<h1>{this.state.title}</h1>
 				{this.props.page.state.userName !== "" ? 
 					<div>
-						<button onClick={this.delete}>Delete</button> 
+						{this.isDeleteButtonVisible() ? <button onClick={this.delete}>Delete</button> : null}
 						<button onClick={this.toggleMessageWriterVisibility}>New message</button>
 						{this.state.isMessageWriterVisible ? <MessageWriter topic={this} /> : null}
 					</div>
