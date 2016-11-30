@@ -2,6 +2,7 @@
     border: 0.063em solid black;
 	clear: both;
 	overflow: auto;
+	background-color: #91AA9D;
 }
 .messageLeft{
 	float: left;
@@ -54,6 +55,7 @@
 	margin-right: auto;
 	border: 0.06em solid black;
 	padding: 0;
+	background-color: #91AA9D; 
 }
 .topicList table{
 	width: 100%;
@@ -63,6 +65,7 @@
     border: 0.06em solid black;
     margin-left: auto;
 	margin-right: auto;
+	background-color: #D1DBDB;
 }
 .messageWriter textarea{
     width: 98%;
@@ -109,17 +112,19 @@
 	font-size: 1em;
     max-height: 17.5em;
 	height: 5em;
-    background-color: lightskyblue;
+    background-color: #3E606F;
 }
 .pageContent{
 	width: 80%;
 	margin-left: auto;
 	margin-right: auto;
 }
-.page{
-	background: lightBlue; /* For browsers that do not support gradients */
-	background: -webkit-linear-gradient(white, lightBlue); /* For Safari 5.1 to 6.0 */
-	background: -o-linear-gradient(white, lightBlue); /* For Opera 11.1 to 12.0 */
-	background: -moz-linear-gradient(white, lightBlue); /* For Firefox 3.6 to 15 */
-	background: linear-gradient(white, lightBlue); /* Standard syntax */
+body{
+	background: #FCFFF5; /* For browsers that do not support gradients */
+	background: -webkit-linear-gradient(#FCFFF5, #193441); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(#FCFFF5, #193441); /* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(#FCFFF5, #193441); /* For Firefox 3.6 to 15 */
+	background: linear-gradient(#FCFFF5, #193441); /* Standard syntax */
+	background-attachment: fixed;
+	background-size: cover;
 }
