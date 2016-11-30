@@ -23,7 +23,6 @@ class Database
         INSERT INTO Message(TopicId, UserId, Text, Posted)
         VALUES (:topicId, :userId, :text, NOW());
 SQL;
-        
         $statement = $this->pdo->prepare($query);
         $statement->bindValue(':topicId', $topicId, PDO::PARAM_INT);
         $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
@@ -59,8 +58,6 @@ SQL;
     
     function getTopic($id)
     {
-        $topic = array();
-		
 		$query = <<<SQL
         SELECT * FROM Topic 
         WHERE Id = :id;
@@ -69,44 +66,44 @@ SQL;
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
         $statement->execute();
 		
-		
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
         {
-			$userId = $row["UserId"];
-            $user = $this->getUser($userId);
-			
-            $topic["title"] = $row["Title"];
-			$topic["userName"] = $user["Name"];
+			return $this->getTopicFromRow($row);
         }
-        return $topic;
+        return null;
     }
     
     function getTopics()
     {
         $topics = array();
         $statement = $this->pdo->query("SELECT * FROM Topic");
-        while ($topic = $statement->fetch(PDO::FETCH_ASSOC)) 
+        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
         {
-			$userId = $topic["UserId"];
-            $user = $this->getUser($userId);
-			
-			$messages = $this->getMessages($topic["Id"]);
-			$lastPost = $topic["Posted"];
-			if (count($messages) > 0)
-			{
-				$lastPost = $messages[0]["posted"];
-			}
-			
-            $topics[] = array(
-				"id" => $topic["Id"],
-                "title" => $topic["Title"],
-				"userName" => $user["Name"],
-				"posted" => $topic["Posted"],
-				"lastPost" => $lastPost
-            );
+			$topics[] = $this->getTopicFromRow($row);
         }
         return $topics;
     }
+	
+	function getTopicFromRow($row)
+	{
+		$userId = $row["UserId"];
+		$user = $this->getUser($userId);
+
+		$messages = $this->getMessages($row["Id"]);
+		$lastPost = $row["Posted"];
+		if (count($messages) > 0)
+		{
+			$lastPost = $messages[0]["posted"];
+		}
+
+		return array(
+			"id" => $row["Id"],
+			"title" => $row["Title"],
+			"userName" => $user["Name"],
+			"posted" => $row["Posted"],
+			"lastPost" => $lastPost
+		);
+	}
     
 	function sendTopic($userId, $forumId, $title)
     {
@@ -114,7 +111,6 @@ SQL;
         INSERT INTO Topic(UserId, ForumId, Title, Posted)
         VALUES (:userId, :forumId, :title, NOW());
 SQL;
-        
         $statement = $this->pdo->prepare($query);
         $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
         $statement->bindValue(':forumId', $forumId, PDO::PARAM_INT);
@@ -128,7 +124,6 @@ SQL;
 		SELECT * FROM Topic
 		WHERE Id = :id AND UserId = :userId;
 SQL;
-		
 		$statement = $this->pdo->prepare($query);
 		$statement->bindValue(":id", $id, PDO::PARAM_INT);
 		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
@@ -141,7 +136,6 @@ SQL;
 			DELETE FROM Message
 			WHERE TopicId = :id;
 SQL;
-			
 			$statement = $this->pdo->prepare($query);
 			$statement->bindValue(":id", $id, PDO::PARAM_INT);
 			$statement->execute();
@@ -150,7 +144,6 @@ SQL;
 			DELETE FROM Topic
 			WHERE Id = :id;
 SQL;
-			
 			$statement = $this->pdo->prepare($query);
 			$statement->bindValue(":id", $id, PDO::PARAM_INT);
 			$statement->execute();
@@ -166,7 +159,6 @@ SQL;
 		WHERE TopicId = :topicId
 		ORDER BY Posted DESC;
 SQL;
-		
 		$statement = $this->pdo->prepare($query);
 		$statement->bindValue(":topicId", $topicId, PDO::PARAM_STR);
 		$statement->execute();
@@ -207,7 +199,6 @@ SQL;
 		INSERT INTO Forum(Title, Created)
 		VALUES (:title, NOW());
 SQL;
-		
 		$statement = $this->pdo->prepare($sql);
 		$statement->bindValue(":title", $title, PDO::PARAM_STR);
 		$statement->execute();
@@ -215,7 +206,6 @@ SQL;
 		$sql = <<<SQL
 		SELECT * FROM Forum WHERE Title = :title;
 SQL;
-		
 		$statement = $this->pdo->prepare($sql);
 		$statement->bindValue(":title", $title, PDO::PARAM_STR);
 		$statement->execute();
@@ -236,7 +226,6 @@ SQL;
 		INSERT INTO Moderator(UserId, ForumId)
 		VALUES (:userId, :forumId);
 SQL;
-		
 		$statement = $this->pdo->prepare($sql);
 		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
 		$statement->bindValue(":forumId", $forumId, PDO::PARAM_INT);
@@ -251,7 +240,6 @@ SQL;
         INSERT INTO User(Name, Password, AvatarUrl, Joined)
         VALUES (:name, :password, :avatarUrl, NOW());
 SQL;
-        
         $statement = $this->pdo->prepare($query);
         $statement->bindValue(':name', $name, PDO::PARAM_STR);
         $statement->bindValue(':password', $passwordHash, PDO::PARAM_STR);
@@ -267,7 +255,6 @@ SQL;
         SELECT * FROM User
         WHERE Name=:name;
 SQL;
-        
         $statement = $this->pdo->prepare($query);
         $statement->bindValue(':name', $name, PDO::PARAM_STR);
         $statement->execute();

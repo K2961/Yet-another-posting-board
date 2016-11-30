@@ -430,14 +430,16 @@ var LoginPopup = React.createClass({
         return (
             <div className="loginPopup">
                 <table>
-                    <tr>
-                        <td>Login</td>
-                        <td><input ref="username" type="text"></input></td>
-                    </tr>
-                    <tr>
-                        <td>Password</td>
-                        <td><input ref="password" type="password"></input></td>
-                    </tr>
+					<tbody>
+						<tr>
+							<td>Username</td>
+							<td><input ref="username" type="text"></input></td>
+						</tr>
+						<tr>
+							<td>Password</td>
+							<td><input ref="password" type="password"></input></td>
+						</tr>
+					</tbody>
                 </table>
                 <button onClick={this.handleLogin}>Log in</button>
                 <button onClick={this.handleCancel}>Cancel</button>    
@@ -462,16 +464,18 @@ var RegisterPopup = React.createClass({
 		return (
 			<div className="registerPopup">
 				<table>
-					<tr>
-						<td>Username</td>
-						<td><input ref="username" type="text"></input></td>
-					</tr>
-					<tr>
-						<td>Password</td>
-						<td><input ref="password" type="password"></input></td>
-					</tr>
+					<tbody>
+						<tr>
+							<td>Username</td>
+							<td><input ref="username" type="text"></input></td>
+						</tr>
+						<tr>
+							<td>Password</td>
+							<td><input ref="password" type="password"></input></td>
+						</tr>
+					</tbody>
 				</table>
-				<button onClick={this.handleRegister}>Register account</button>
+				<button onClick={this.handleRegister}>Register</button>
 				<button onClick={this.handleCancel}>Cancel</button>    
 			</div>
         );
