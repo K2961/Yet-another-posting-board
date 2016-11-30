@@ -39,6 +39,11 @@
 .messageButtons{
 	float: right;
 }
+.messageEditor{
+	width: 98%;
+	max-width: 99%;
+	height: 10em;
+}
 .topicList th, td{
 	border: 1px solid black;
 	padding: 0.5em;

@@ -92,7 +92,8 @@ var MessageContainer = React.createClass({
 		var messages = this.props.data.map( function(value, index) {
             key++;
             return (
-                <Message key={key} container={container} id={value.id} avatar={value.avatar} userName={value.userName} text={value.text} posted={value.posted}/>
+                <Message key={key} container={container} id={value.id} avatar={value.avatar} 
+					userName={value.userName} text={value.text} posted={value.posted}/>
             );
         });
 
@@ -107,6 +108,9 @@ var MessageContainer = React.createClass({
 var MessageWriter = React.createClass({
     handleSend: function(event) {
 		"use strict";
+		if (this.refs.text.value === "")
+			return;
+		
 		$.ajax({
 			url: "Action/SendMessage.php",
 			method: "post",
@@ -120,16 +124,17 @@ var MessageWriter = React.createClass({
 				console.error("MessageWriter.handleSend: ", status, error.toString());
 			}
         });
+		
+		this.refs.text.value = "";
     },
     
     render: function() {
 		"use strict";
         return(
             <div className="messageWriter">
-                <textarea ref="text" placeholder="Text here" />
+                <textarea ref="text" placeholder="Type your message here." />
                 <div className="writerButtons">
                     <button onClick={this.handleSend}>Send</button>
-                    <button>Clear</button>
                 </div> 
             </div>
         );
@@ -137,38 +142,49 @@ var MessageWriter = React.createClass({
 });
 
 var Topic = React.createClass({
-    getInitialState: function() {
+	getInitialState: function() {
 		"use strict";
-        return {
-            title: "Test title",
+		return {
+			id: -1,
+			title: "",
 			isMessageWriterVisible: false,
-            data: []
-        };
-    },
+			data: []
+		};
+	},
     
+	setId: function(id) {
+		"use strict";
+		var state = this.state;
+		state.id = id;
+		this.setState(state);
+	},
+	
 	setTitle: function(title) {
+		"use strict";
 		var state = this.state;
 		state.title = title;
 		this.setState(state);
 	},
 	
 	setMessageWriterVisible: function(isMessageWriterVisible) {
+		"use strict";
 		var state = this.state;
 		state.isMessageWriterVisible = isMessageWriterVisible;
 		this.setState(state);
 	},
 	
 	setData: function(data) {
+		"use strict";
 		var state = this.state;
 		state.data = data;
 		this.setState(state);
 	},
 	
-    getInfo: function(id) {
+    getInfo: function() {
 		"use strict";
 		$.ajax({
 			url: "Action/GetTopic.php",
-			data: {id: id},
+			data: {id: this.state.id},
 			dataType: "json",
 			cache: false,
 			success: function(data) {
@@ -180,11 +196,11 @@ var Topic = React.createClass({
         });
     },
     
-    getMessages: function(id) {
+    getMessages: function() {
 		"use strict";		
 		$.ajax({
             url: "Action/GetMessages.php",
-            data: {topicId: id},
+            data: {topicId: this.state.id},
             dataType: "json",
             cache: false,
             success: function(data) {
@@ -197,6 +213,7 @@ var Topic = React.createClass({
     },
     
 	toggleMessageWriterVisibility: function() {
+		"use strict";
 		this.setMessageWriterVisible(!this.state.isMessageWriterVisible);	
 	},
 	
@@ -205,11 +222,11 @@ var Topic = React.createClass({
         $.ajax({
             url: "Action/DeleteTopic.php",
             method: "post",
-            data: {id: this.props.id},
+            data: {id: this.state.id},
             dataType: "text",
             cache: false,
             success: function() {
-				this.props.page.setTopicId(-1);
+				this.setState(this.getInitialState());
 				this.props.page.refs.forum.getTopics();
 			}.bind(this),
             error: function(xhr, status, error) {
@@ -224,16 +241,17 @@ var Topic = React.createClass({
         //setInterval(this.getMessages, 5000);
     },
 	
-	reload: function(id) {
-		this.getInfo(id);
-        this.getMessages(id);
+	reload: function() {
+		"use strict";
+		this.getInfo();
+        this.getMessages();
 	},
     
     render: function() {
 		"use strict";
         return (
-            <div className="topic">
-                <h1>{this.state.title}</h1>
+			<div className="topic">
+				<h1>{this.state.title}</h1>
 				{this.props.page.state.userName !== "" ? 
 					<div>
 						<button onClick={this.delete}>Delete</button> 
@@ -242,8 +260,8 @@ var Topic = React.createClass({
 					</div>
 					: null
 				}
-                <MessageContainer topic={this} data={this.state.data} />
-            </div>
+				<MessageContainer topic={this} data={this.state.data} />
+			</div>
         );
     }
 });
@@ -251,6 +269,9 @@ var Topic = React.createClass({
 var TopicWriter = React.createClass({
     handleSend: function(event) {
 		"use strict";
+		if (this.refs.title.value === "")
+			return;
+		
         $.ajax({
             url: "Action/SendTopic.php",
             method: "post",
@@ -262,6 +283,8 @@ var TopicWriter = React.createClass({
                 console.error("TopicWriter.handleSend: ", status, error.toString());
             }
         });
+		
+		this.refs.title.value = "";
     },
 	
 	render: function() {
@@ -269,10 +292,9 @@ var TopicWriter = React.createClass({
         return(
             <div className="topicWriter">
                 Post new topic<br/>
-				<input type="text" ref="title" placeholder="Title here" />
+				<input type="text" ref="title" placeholder="Topic title" />
                 <div className="topicWriterButtons">
                     <button onClick={this.handleSend}>Send</button>
-                    <button>Clear</button>
                 </div> 
             </div>
         );
@@ -281,8 +303,11 @@ var TopicWriter = React.createClass({
 
 var TopicInfo = React.createClass({
 	handleClick: function(event) {
+		"use strict";
 		event.preventDefault();
-		this.props.list.props.forum.props.page.setTopicId(this.props.id);
+		var topic = this.props.list.props.forum.props.page.refs.topic;
+		topic.setId(this.props.id);
+		topic.reload();
 	},
 	
 	render: function() {
@@ -335,7 +360,8 @@ var TopicList = React.createClass({
 		var topics = this.state.data.map( function(value, index) {
             key++;
             return (
-                <TopicInfo key={key} id={value.id} list={list} title={value.title} userName={value.userName} posted={value.posted} lastPost={value.lastPost} />
+                <TopicInfo key={key} id={value.id} list={list} title={value.title} 
+					userName={value.userName} posted={value.posted} lastPost={value.lastPost} />
             );
         });
         return (
@@ -358,10 +384,12 @@ var TopicList = React.createClass({
 
 var Forum = React.createClass({
 	getTopics: function() {
+		"use strict";
 		this.refs.topicList.getTopics();
 	},
 	
 	render: function() {
+		"use strict";
 		return (
 			<div className="forum">
 				{this.props.page.state.userName !== "" ? <TopicWriter forum={this} /> : null}
@@ -473,7 +501,7 @@ var LoginBar = React.createClass({
             dataType: "json",
             cache: false,
             success: function(data) {
-				this.props.page.setState({userName: data.name});
+				this.props.page.setUserName(data.name);
             }.bind(this),
             error: function(xhr, status, error) {
                 console.error("LoginBar.sendLogin: ", status, error.toString());
@@ -553,7 +581,6 @@ var Page = React.createClass({
 		"use strict";
 		return ({
 			userName: "",
-			topicId: -1
 		});
 	},
 	
@@ -562,14 +589,6 @@ var Page = React.createClass({
 		var state = this.state;
 		state.userName = userName;
 		this.setState(state);
-	},
-	
-	setTopicId: function(topicId) {
-		"use strict";
-		var state = this.state;
-		state.topicId = topicId;
-		this.setState(state);
-		this.refs.topic.reload(topicId);
 	},
 	
 	componentDidMount: function() {
@@ -590,9 +609,7 @@ var Page = React.createClass({
             dataType: "json",
             cache: false,
             success: function(data) {
-				if (data.length > 0) {
-					this.setTopicId(data[0].id);
-				}
+				
             }.bind(this),
             error: function(xhr, status, error) {
                 console.error("Page.componentDidMount: ", status, error.toString());
@@ -610,7 +627,7 @@ var Page = React.createClass({
 				<div className="pageContent">
 					{this.state.userName === "" ? <LoginBar page={this} /> : <LogoutBar page={this} />}
 					<Forum ref="forum" page={this}/>
-					{this.state.topicId > -1 ? <Topic ref="topic" page={this} id={this.state.topicId} /> : null}
+					<Topic ref="topic" page={this}/>
 				</div>
             </div>
         );
