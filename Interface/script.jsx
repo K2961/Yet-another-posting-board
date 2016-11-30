@@ -1,62 +1,85 @@
 var Message = React.createClass({
-    getInitialState: function () {
+	getInitialState: function () {
 		"use strict";
-        return ({
-            isEditorVisible: false
-        });
-    },
-    
-    handleEdit: function () {
+		return ({
+			isEditorVisible: false
+		});
+	},
+
+	handleEdit: function () {
 		"use strict";
-        this.setState({isEditorVisible: ! this.state.isEditorVisible});
-    },
-    
-    handleSave: function () {
+		this.setState({isEditorVisible: ! this.state.isEditorVisible});
+	},
+
+	handleSave: function () {
 		"use strict";
-        this.setState({isEditorVisible: ! this.state.isEditorVisible});
-        var topic = this.props.container.props.topic;
-        var id = this.props.id;
-        var text = this.refs.messageEditor.value;
-        $.ajax({
-            url: "Action/EditMessage.php",
-            method: "post",
-            data: {id: id, text: text},
-            dataType: "text",
-            cache: false,
-            success: topic.getMessages,
-            error: function(xhr, status, error) {
-                console.error("Message.handleSave: ", status, error.toString());
-            }
-        });
-    },
-    
-    handleDelete: function () {
+		this.setState({isEditorVisible: ! this.state.isEditorVisible});
+		var topic = this.props.container.props.topic;
+		var id = this.props.id;
+		var text = this.refs.messageEditor.value;
+		$.ajax({
+			url: "Action/EditMessage.php",
+			method: "post",
+			data: {id: id, text: text},
+			dataType: "text",
+			cache: false,
+			success: topic.getMessages,
+			error: function(xhr, status, error) {
+				console.error("Message.handleSave: ", status, error.toString());
+			}
+		});
+	},
+
+	handleDelete: function () {
 		"use strict";
-        var topic = this.props.container.props.topic;
-        $.ajax({
-            url: "Action/DeleteMessage.php",
-            method: "post",
-            data: {id: this.props.id},
-            dataType: "text",
-            cache: false,
-            success: topic.getMessages,
-            error: function(xhr, status, error) {
-                console.error("Message.handleDelete: ", status, error.toString());
-            }
-        });
-    },
-    
+		var topic = this.props.container.props.topic;
+		$.ajax({
+			url: "Action/DeleteMessage.php",
+			method: "post",
+			data: {id: this.props.id},
+			dataType: "text",
+			cache: false,
+			success: topic.getMessages,
+			error: function(xhr, status, error) {
+				console.error("Message.handleDelete: ", status, error.toString());
+			}
+		});
+	},
+	
+	handleBan: function() {
+		"use strict";
+		var topic = this.props.container.props.topic;
+		$.ajax({
+			url: "Action/BanUser.php",
+			method: "post",
+			data: {id: this.props.userId},
+			dataType: "text",
+			cache: false,
+			success: topic.getMessages,
+			error: function(xhr, status, error) {
+				console.error("Message.handleDelete: ", status, error.toString());
+			}
+		});
+	},
+	
 	areButtonsVisible: function() {
 		"use strict";
 		var page = this.props.container.props.topic.props.page;
-		if (page.state.userName === "Admin")
-			return true; // Dirty hack, remove later.
+		if (this.isUserModerator())
+			return true;
 		return this.props.userName === page.state.userName;
 	},
-	
-    render: function () {
-        "use strict";
-        return (
+
+	isUserModerator: function() {
+		var page = this.props.container.props.topic.props.page;
+		if (page.state.userName === "Admin")
+			return true; // Dirty hack, remove later.
+		return false;
+	},
+
+	render: function () {
+		"use strict";
+		return (
 			<div className="message">
 				<div className="messageLeft">
 					<img className="avatar" src={this.props.avatar}></img>
@@ -69,6 +92,7 @@ var Message = React.createClass({
 						</ul>
 						{ this.areButtonsVisible() ?
 							<div className="messageButtons">
+								{this.isUserModerator() ? <button onClick={this.handleBan}>Ban</button> : null}
 								{! this.state.isEditorVisible ? <button onClick={this.handleEdit}>Edit</button> : null}
 								{this.state.isEditorVisible ? <button onClick={this.handleSave}>Save</button> : null}
 								<button onClick={this.handleDelete}>Delete</button>
@@ -82,37 +106,37 @@ var Message = React.createClass({
 					</div>
 				</div>
 			</div>
-        );
-    }
+		);
+	}
 });
 
 var MessageContainer = React.createClass({                                         
-    render: function () {
+	render: function () {
 		"use strict";
 		var key = 0;
 		var container = this;
 		var messages = this.props.data.map( function(value, index) {
-            key++;
-            return (
-                <Message key={key} container={container} id={value.id} avatar={value.avatar} 
-					userName={value.userName} text={value.text} posted={value.posted}/>
-            );
-        });
+			key++;
+			return (
+				<Message key={key} container={container} id={value.id} avatar={value.avatar} 
+					userId={value.userId} userName={value.userName} text={value.text} posted={value.posted}/>
+			);
+		});
 
-        return (
-            <div>
-                {messages}
-            </div>
-        );
-    }
+		return (
+			<div>
+				{messages}
+			</div>
+		);
+	}
 });
 
 var MessageWriter = React.createClass({
-    handleSend: function(event) {
+	handleSend: function(event) {
 		"use strict";
 		if (this.refs.text.value === "")
 			return;
-		
+
 		$.ajax({
 			url: "Action/SendMessage.php",
 			method: "post",
@@ -125,22 +149,22 @@ var MessageWriter = React.createClass({
 			error: function(xhr, status, error) {
 				console.error("MessageWriter.handleSend: ", status, error.toString());
 			}
-        });
-		
+		});
+
 		this.refs.text.value = "";
-    },
-    
-    render: function() {
+	},
+
+	render: function() {
 		"use strict";
-        return(
-            <div className="messageWriter">
-                <textarea ref="text" placeholder="Type your message here." />
-                <div className="writerButtons">
-                    <button onClick={this.handleSend}>Send</button>
-                </div> 
-            </div>
-        );
-    }
+		return(
+			<div className="messageWriter">
+				<textarea ref="text" placeholder="Type your message here." />
+				<div className="writerButtons">
+					<button onClick={this.handleSend}>Send</button>
+				</div> 
+			</div>
+		);
+	}
 });
 
 var Topic = React.createClass({
@@ -154,43 +178,43 @@ var Topic = React.createClass({
 			data: []
 		};
 	},
-    
+
 	setId: function(id) {
 		"use strict";
 		var state = this.state;
 		state.id = id;
 		this.setState(state);
 	},
-	
+
 	setTitle: function(title) {
 		"use strict";
 		var state = this.state;
 		state.title = title;
 		this.setState(state);
 	},
-	
+
 	setUserName: function(userName) {
 		"use strict";
 		var state = this.state;
 		state.userName = userName;
 		this.setState(state);
 	},
-	
+
 	setMessageWriterVisible: function(isMessageWriterVisible) {
 		"use strict";
 		var state = this.state;
 		state.isMessageWriterVisible = isMessageWriterVisible;
 		this.setState(state);
 	},
-	
+
 	setData: function(data) {
 		"use strict";
 		var state = this.state;
 		state.data = data;
 		this.setState(state);
 	},
-	
-    getInfo: function() {
+
+	getInfo: function() {
 		"use strict";
 		$.ajax({
 			url: "Action/GetTopic.php",
@@ -204,30 +228,30 @@ var Topic = React.createClass({
 			error: function(xhr, status, error) {
 				console.error("Topic.getInfo: ", status, error.toString());
 			}
-        });
-    },
-    
-    getMessages: function() {
+		});
+	},
+
+	getMessages: function() {
 		"use strict";		
 		$.ajax({
-            url: "Action/GetMessages.php",
-            data: {topicId: this.state.id},
-            dataType: "json",
-            cache: false,
-            success: function(data) {
+			url: "Action/GetMessages.php",
+			data: {topicId: this.state.id},
+			dataType: "json",
+			cache: false,
+			success: function(data) {
 				this.setData(data);
-            }.bind(this),
-            error: function(xhr, status, error) {
-                console.error("Topic.getMessages: ", status, error.toString());
-            }
-        });
-    },
-    
+			}.bind(this),
+			error: function(xhr, status, error) {
+				console.error("Topic.getMessages: ", status, error.toString());
+			}
+		});
+	},
+
 	toggleMessageWriterVisibility: function() {
 		"use strict";
 		this.setMessageWriterVisible(!this.state.isMessageWriterVisible);	
 	},
-	
+
 	isDeleteButtonVisible: function() {
 		"use strict";
 		var page = this.props.page;
@@ -235,40 +259,40 @@ var Topic = React.createClass({
 			return true; // Dirty hack, remove later.
 		return this.state.userName === page.state.userName;
 	},
-	
+
 	delete: function() {
 		"use strict";
-        $.ajax({
-            url: "Action/DeleteTopic.php",
-            method: "post",
-            data: {id: this.state.id},
-            dataType: "text",
-            cache: false,
-            success: function() {
+		$.ajax({
+			url: "Action/DeleteTopic.php",
+			method: "post",
+			data: {id: this.state.id},
+			dataType: "text",
+			cache: false,
+			success: function() {
 				this.setState(this.getInitialState());
 				this.props.page.refs.forum.getTopics();
 			}.bind(this),
-            error: function(xhr, status, error) {
-                console.error("Topic.delete: ", status, error.toString());
-            }
-        });
+			error: function(xhr, status, error) {
+				console.error("Topic.delete: ", status, error.toString());
+			}
+		});
 	},
-	
-    componentDidMount: function() {
+
+	componentDidMount: function() {
 		"use strict";
-        this.reload(this.props.id);
-        //setInterval(this.getMessages, 5000);
-    },
-	
+		this.reload(this.props.id);
+		//setInterval(this.getMessages, 5000);
+	},
+
 	reload: function() {
 		"use strict";
 		this.getInfo();
-        this.getMessages();
+		this.getMessages();
 	},
-    
-    render: function() {
+
+	render: function() {
 		"use strict";
-        return (
+		return (
 			<div className="topic">
 				{this.state.id > 0 ?
 					<div>
@@ -286,42 +310,42 @@ var Topic = React.createClass({
 					: null
 				}
 			</div>
-        );
-    }
+		);
+	}
 });
 
 var TopicWriter = React.createClass({
-    handleSend: function(event) {
+	handleSend: function(event) {
 		"use strict";
 		if (this.refs.title.value === "")
 			return;
-		
-        $.ajax({
-            url: "Action/SendTopic.php",
-            method: "post",
-            data: {title: this.refs.title.value},
-            dataType: "text",
-            cache: false,
-            success: this.props.forum.getTopics,
-            error: function(xhr, status, error) {
-                console.error("TopicWriter.handleSend: ", status, error.toString());
-            }
-        });
-		
+
+		$.ajax({
+			url: "Action/SendTopic.php",
+			method: "post",
+			data: {title: this.refs.title.value},
+			dataType: "text",
+			cache: false,
+			success: this.props.forum.getTopics,
+			error: function(xhr, status, error) {
+				console.error("TopicWriter.handleSend: ", status, error.toString());
+			}
+		});
+
 		this.refs.title.value = "";
-    },
-	
+	},
+
 	render: function() {
 		"use strict";
-        return(
-            <div className="topicWriter">
-                Post new topic<br/>
+		return(
+			<div className="topicWriter">
+				Post new topic<br/>
 				<input type="text" ref="title" placeholder="Topic title" />
-                <div className="topicWriterButtons">
-                    <button onClick={this.handleSend}>Send</button>
-                </div> 
-            </div>
-        );
+				<div className="topicWriterButtons">
+					<button onClick={this.handleSend}>Send</button>
+				</div> 
+			</div>
+		);
 	}
 });
 
@@ -333,7 +357,7 @@ var TopicInfo = React.createClass({
 		topic.setId(this.props.id);
 		topic.reload();
 	},
-	
+
 	render: function() {
 		"use strict";
 		return (
@@ -348,48 +372,48 @@ var TopicInfo = React.createClass({
 });
 
 var TopicList = React.createClass({
-    getInitialState: function() {
+	getInitialState: function() {
 		"use strict";
-        return {
+		return {
 			data: []
-        };
+		};
 	},
-	
+
 	componentDidMount: function() {
 		"use strict";
 		this.getTopics();	
 	},
-	
+
 	getTopics: function() {
 		"use strict";
 		$.ajax({
-            url: "Action/GetTopics.php",
-            dataType: "json",
-            cache: false,
-            success: function(data) {
-                this.setState({
-                    data: data
-                });
-            }.bind(this),
-            error: function(xhr, status, error) {
-                console.error("TopicList.getTopics: ", status, error.toString());
-            }
-        });
+			url: "Action/GetTopics.php",
+			dataType: "json",
+			cache: false,
+			success: function(data) {
+				this.setState({
+					data: data
+				});
+			}.bind(this),
+			error: function(xhr, status, error) {
+				console.error("TopicList.getTopics: ", status, error.toString());
+			}
+		});
 	},
-	
+
 	render: function() {
 		"use strict";
 		var key = 0;
 		var list = this;
 		var topics = this.state.data.map( function(value, index) {
-            key++;
-            return (
-                <TopicInfo key={key} id={value.id} list={list} title={value.title} 
+			key++;
+			return (
+				<TopicInfo key={key} id={value.id} list={list} title={value.title} 
 					userName={value.userName} posted={value.posted} lastPost={value.lastPost} />
-            );
-        });
-        return (
-            <div className="topicList">
+			);
+		});
+		return (
+			<div className="topicList">
 				<table>
 					<thead>
 						<tr>
@@ -401,9 +425,9 @@ var TopicList = React.createClass({
 					</thead>
 					<tbody>{topics}</tbody>
 				</table>
-            </div>
-        );
-    }
+			</div>
+		);
+	}
 });
 
 var Forum = React.createClass({
@@ -411,7 +435,7 @@ var Forum = React.createClass({
 		"use strict";
 		this.refs.topicList.getTopics();
 	},
-	
+
 	render: function() {
 		"use strict";
 		return (
@@ -424,21 +448,21 @@ var Forum = React.createClass({
 });
 
 var LoginPopup = React.createClass({
-    handleCancel: function() {
+	handleCancel: function() {
 		"use strict";
-        this.props.cancel();
-    },
-    
-    handleLogin: function() {
+		this.props.cancel();
+	},
+
+	handleLogin: function() {
 		"use strict";
-        this.props.send(this.refs.username.value, this.refs.password.value);
-    },
-    
-    render: function() {
-        "use strict";
-        return (
-            <div className="loginPopup">
-                <table>
+		this.props.send(this.refs.username.value, this.refs.password.value);
+	},
+
+	render: function() {
+		"use strict";
+		return (
+			<div className="loginPopup">
+				<table>
 					<tbody>
 						<tr>
 							<td>Username</td>
@@ -449,26 +473,26 @@ var LoginPopup = React.createClass({
 							<td><input ref="password" type="password"></input></td>
 						</tr>
 					</tbody>
-                </table>
-                <button onClick={this.handleLogin}>Log in</button>
-                <button onClick={this.handleCancel}>Cancel</button>    
-            </div>
-        );
-    } 
+				</table>
+				<button onClick={this.handleLogin}>Log in</button>
+				<button onClick={this.handleCancel}>Cancel</button>    
+			</div>
+		);
+	} 
 });
 
 var RegisterPopup = React.createClass({
-    handleCancel: function() {
+	handleCancel: function() {
 		"use strict";
 		this.props.cancel();
-    },
-    
-    handleRegister: function() {
+	},
+
+	handleRegister: function() {
 		"use strict";
 		this.props.send(this.refs.username.value, this.refs.password.value);
-    },
-    
-    render: function() {
+	},
+
+	render: function() {
 		"use strict";
 		return (
 			<div className="registerPopup">
@@ -487,77 +511,77 @@ var RegisterPopup = React.createClass({
 				<button onClick={this.handleRegister}>Register</button>
 				<button onClick={this.handleCancel}>Cancel</button>    
 			</div>
-        );
-    } 
+		);
+	} 
 });
 
 var LoginBar = React.createClass({
 	getInitialState: function() {
 		"use strict";
-        return ({
+		return ({
 			isLoginVisible: false,
 			isRegisterVisible: false
 		});
-    },
-    
-    login_onClick: function() { 
+	},
+
+	login_onClick: function() { 
 		"use strict";       
-        this.setState({
-            isLoginVisible: ! this.state.isLoginVisible,
-            isRegisterVisible: false
-        });
-    },
-    
-    register_onClick: function() {
+		this.setState({
+			isLoginVisible: ! this.state.isLoginVisible,
+			isRegisterVisible: false
+		});
+	},
+
+	register_onClick: function() {
 		"use strict";
-        this.setState({
-            isLoginVisible: false,
-            isRegisterVisible: ! this.state.isRegisterVisible
-        });
-    },
-	
+		this.setState({
+			isLoginVisible: false,
+			isRegisterVisible: ! this.state.isRegisterVisible
+		});
+	},
+
 	sendLogin: function(name, password) {
 		"use strict";
-        this.setState({
-            isLoginVisible: false,
-            isRegisterVisible: false
-        });
-        $.ajax({
-            url: "Action/SendLogin.php",
-            method: "post",
-            data: {name: name, password: password},
-            dataType: "json",
-            cache: false,
-            success: function(data) {
+		this.setState({
+			isLoginVisible: false,
+			isRegisterVisible: false
+		});
+		$.ajax({
+			url: "Action/SendLogin.php",
+			method: "post",
+			data: {name: name, password: password},
+			dataType: "json",
+			cache: false,
+			success: function(data) {
 				this.props.page.setUserName(data.name);
-            }.bind(this),
-            error: function(xhr, status, error) {
-                console.error("LoginBar.sendLogin: ", status, error.toString());
-            }
-        });
-    },
-    
-    sendRegistration: function(name, password) { 
+			}.bind(this),
+			error: function(xhr, status, error) {
+				console.error("LoginBar.sendLogin: ", status, error.toString());
+			}
+		});
+	},
+
+	sendRegistration: function(name, password) { 
 		"use strict";
-        this.setState({
-            isLoginVisible: false,
-            isRegisterVisible: false
-        });
-        $.ajax({
-            url: "Action/SendRegistration.php",
-            method: "post",
-            data: {name: name, password: password},
-            dataType: "json",
-            cache: false,
-            success: function(data) {
+		this.setState({
+			isLoginVisible: false,
+			isRegisterVisible: false
+		});
+		$.ajax({
+			url: "Action/SendRegistration.php",
+			method: "post",
+			data: {name: name, password: password},
+			dataType: "json",
+			cache: false,
+			success: function(data) {
 				this.props.page.setUserName(data.name);
-            }.bind(this),
-            error: function(xhr, status, error) {
-                console.error("LoginBar.sendRegistration: ", status, error.toString());
-            }
-        });
-    },
-	
+			}.bind(this),
+			error: function(xhr, status, error) {
+				console.error("LoginBar.sendRegistration: ", status, error.toString());
+			}
+		});
+	},
+
 	render: function() {
 		"use strict";
 		return (
@@ -570,27 +594,27 @@ var LoginBar = React.createClass({
 				{this.state.isLoginVisible ? <LoginPopup send={this.sendLogin} cancel={this.login_onClick} /> : null}
 			</div>
 		);
-    }
+	}
 });
 
 var LogoutBar = React.createClass({
 	logout_onClick: function() {
 		"use strict";
 		$.ajax({
-            url: "Action/SendLogout.php",
-            method: "post",
-            data: {},
-            dataType: "text",
-            cache: false,
-            success: function(data) {
+			url: "Action/SendLogout.php",
+			method: "post",
+			data: {},
+			dataType: "text",
+			cache: false,
+			success: function(data) {
 				this.props.page.setUserName("");
-            }.bind(this),
-            error: function(xhr, status, error) {
-                console.error("LogoutBar.sendLogout: ", status, error.toString());
-            }
-        });
+			}.bind(this),
+			error: function(xhr, status, error) {
+				console.error("LogoutBar.sendLogout: ", status, error.toString());
+			}
+		});
 	},
-	
+
 	render: function() {
 		"use strict";
 		return (
@@ -605,20 +629,20 @@ var LogoutBar = React.createClass({
 });
 
 var Page = React.createClass({
-    getInitialState: function() {
+	getInitialState: function() {
 		"use strict";
 		return ({
 			userName: "",
 		});
 	},
-	
+
 	setUserName: function(userName) {
 		"use strict";
 		var state = this.state;
 		state.userName = userName;
 		this.setState(state);
 	},
-	
+
 	componentDidMount: function() {
 		"use strict";
 		$.ajax({
@@ -629,40 +653,40 @@ var Page = React.createClass({
 				this.setUserName(session.user.name);
 			}.bind(this),
 			error: function(xhr, status, error) {
-                console.error("Page.componentDidMount: ", status, error.toString());
-            }
+				console.error("Page.componentDidMount: ", status, error.toString());
+			}
 		});
 		$.ajax({
-            url: "Action/GetTopics.php",
-            dataType: "json",
-            cache: false,
-            success: function(data) {
-				
-            }.bind(this),
-            error: function(xhr, status, error) {
-                console.error("Page.componentDidMount: ", status, error.toString());
-            }
-        });
+			url: "Action/GetTopics.php",
+			dataType: "json",
+			cache: false,
+			success: function(data) {
+
+			}.bind(this),
+			error: function(xhr, status, error) {
+				console.error("Page.componentDidMount: ", status, error.toString());
+			}
+		});
 	},
-	
+
 	render: function() {
-        "use strict";
-        return (
-            <div className="page">
-                <div className="pageHeader">
-                    <h1>Yet Another Posting Board</h1>
-                </div>
+		"use strict";
+		return (
+			<div className="page">
+				<div className="pageHeader">
+					<h1>Yet Another Posting Board</h1>
+				</div>
 				<div className="pageContent">
 					{this.state.userName === "" ? <LoginBar page={this} /> : <LogoutBar page={this} />}
 					<Forum ref="forum" page={this}/>
 					<Topic ref="topic" page={this}/>
 				</div>
-            </div>
-        );
-    }
+			</div>
+		);
+	}
 });
 
 ReactDOM.render(
-    <Page />,
-    document.getElementById("page")
+	<Page />,
+	document.getElementById("page")
 );
