@@ -49,6 +49,8 @@ var Message = React.createClass({
 	areButtonsVisible: function() {
 		"use strict";
 		var page = this.props.container.props.topic.props.page;
+		if (page.state.userName === "Admin")
+			return true; // Dirty hack, remove later.
 		return this.props.userName === page.state.userName;
 	},
 	
@@ -229,6 +231,8 @@ var Topic = React.createClass({
 	isDeleteButtonVisible: function() {
 		"use strict";
 		var page = this.props.page;
+		if (page.state.userName === "Admin")
+			return true; // Dirty hack, remove later.
 		return this.state.userName === page.state.userName;
 	},
 	
@@ -266,16 +270,21 @@ var Topic = React.createClass({
 		"use strict";
         return (
 			<div className="topic">
-				<h1>{this.state.title}</h1>
-				{this.props.page.state.userName !== "" ? 
+				{this.state.id > 0 ?
 					<div>
-						{this.isDeleteButtonVisible() ? <button onClick={this.delete}>Delete</button> : null}
-						<button onClick={this.toggleMessageWriterVisibility}>New message</button>
-						{this.state.isMessageWriterVisible ? <MessageWriter topic={this} /> : null}
+						<h1>{this.state.title}</h1>
+						{this.props.page.state.userName !== "" ? 
+							<div>
+								{this.isDeleteButtonVisible() ? <button onClick={this.delete}>Delete</button> : null}
+								<button onClick={this.toggleMessageWriterVisibility}>New message</button>
+								{this.state.isMessageWriterVisible ? <MessageWriter topic={this} /> : null}
+							</div>
+							: null
+						}
+						<MessageContainer topic={this} data={this.state.data} />
 					</div>
 					: null
 				}
-				<MessageContainer topic={this} data={this.state.data} />
 			</div>
         );
     }

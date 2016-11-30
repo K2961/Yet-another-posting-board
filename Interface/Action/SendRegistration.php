@@ -2,6 +2,9 @@
 require_once "Database.class.php";
 $database = new Database();
 $name = $_POST["name"];
+if ($name === "Admin") // Dirty hack, remove later.
+	exit();
+
 $password = $_POST["password"];
 $avatarUrl = "Test.png";
 $user = $database->addUser($name, $password, $avatarUrl);
@@ -12,4 +15,5 @@ if ($user !== null)
     $response = json_encode($user);
     header('Content-type: application/json');
     echo $response;
+	exit();
 }

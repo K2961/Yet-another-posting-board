@@ -35,11 +35,12 @@ SQL;
         $query = <<<SQL
         UPDATE Message
         SET Text = :text
-        WHERE Id = :messageId AND UserId = :userId;
+        WHERE Id = :messageId;
 SQL;
+		// AND UserId = :userId
         $statement = $this->pdo->prepare($query);
         $statement->bindValue(':messageId', $messageId, PDO::PARAM_INT);
-        $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+        //$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
         $statement->bindValue(':text', $text, PDO::PARAM_STR);
         $statement->execute();
     }
@@ -48,11 +49,12 @@ SQL;
     {
         $query = <<<SQL
         DELETE FROM Message 
-        WHERE Id = :messageId AND UserId = :userId;
+        WHERE Id = :messageId;
 SQL;
+		// AND UserId = :userId
         $statement = $this->pdo->prepare($query);
         $statement->bindValue(':messageId', $messageId, PDO::PARAM_INT);
-        $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+        //$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
         $statement->execute();
     }
     
@@ -122,11 +124,12 @@ SQL;
 	{
 		$query = <<<SQL
 		SELECT * FROM Topic
-		WHERE Id = :id AND UserId = :userId;
+		WHERE Id = :id;
 SQL;
+		// AND UserId = :userId
 		$statement = $this->pdo->prepare($query);
 		$statement->bindValue(":id", $id, PDO::PARAM_INT);
-		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
+		//$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
 		$statement->execute();
 		
 		$topicMatchesUser = $statement->fetch(PDO::FETCH_ASSOC);
