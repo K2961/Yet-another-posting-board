@@ -14,7 +14,7 @@ var Message = React.createClass({
 	handleSave: function () {
 		"use strict";
 		this.setState({isEditorVisible: ! this.state.isEditorVisible});
-		var topic = this.props.container.props.topic;
+		var topic = this.getTopic();
 		var id = this.props.id;
 		var text = this.refs.messageEditor.value;
 		$.ajax({
@@ -32,7 +32,7 @@ var Message = React.createClass({
 
 	handleDelete: function () {
 		"use strict";
-		var topic = this.props.container.props.topic;
+		var topic = this.getTopic();
 		$.ajax({
 			url: "Action/DeleteMessage.php",
 			method: "post",
@@ -48,7 +48,7 @@ var Message = React.createClass({
 	
 	handleBan: function() {
 		"use strict";
-		var topic = this.props.container.props.topic;
+		var topic = this.getTopic();
 		$.ajax({
 			url: "Action/BanUser.php",
 			method: "post",
@@ -64,19 +64,22 @@ var Message = React.createClass({
 	
 	areButtonsVisible: function() {
 		"use strict";
-		var page = this.props.container.props.topic.props.page;
-		if (this.isUserModerator())
+		var page = this.getPage();
+		if (page.isUserBanned())
+			return false;
+		if (page.isUserModerator())
 			return true;
-		return this.props.userName === page.state.userName;
+		return this.props.userName === page.state.user.name;
 	},
-
-	isUserModerator: function() {
-		var page = this.props.container.props.topic.props.page;
-		if (page.state.userName === "Admin")
-			return true; // Dirty hack, remove later.
-		return false;
+	
+	getTopic: function() {
+		return this.props.container.props.topic;
 	},
-
+	
+	getPage: function() {
+		return this.getTopic().props.page;
+	},
+	
 	render: function () {
 		"use strict";
 		return (
@@ -92,7 +95,7 @@ var Message = React.createClass({
 						</ul>
 						{ this.areButtonsVisible() ?
 							<div className="messageButtons">
-								{this.isUserModerator() ? <button onClick={this.handleBan}>Ban</button> : null}
+								{this.getPage().isUserModerator() ? <button onClick={this.handleBan}>Ban</button> : null}
 								{! this.state.isEditorVisible ? <button onClick={this.handleEdit}>Edit</button> : null}
 								{this.state.isEditorVisible ? <button onClick={this.handleSave}>Save</button> : null}
 								<button onClick={this.handleDelete}>Delete</button>
@@ -251,13 +254,20 @@ var Topic = React.createClass({
 		"use strict";
 		this.setMessageWriterVisible(!this.state.isMessageWriterVisible);	
 	},
-
+	
+	areActionsVisible: function() {
+		"use strict";
+		if (this.props.page.isUserBanned())
+			return false;
+		return this.props.page.state.user.name !== "";
+	},
+	
 	isDeleteButtonVisible: function() {
 		"use strict";
 		var page = this.props.page;
-		if (page.state.userName === "Admin")
-			return true; // Dirty hack, remove later.
-		return this.state.userName === page.state.userName;
+		if (page.isUserModerator())
+			return true;
+		return this.state.userName === page.state.user.name;
 	},
 
 	delete: function() {
@@ -294,10 +304,10 @@ var Topic = React.createClass({
 		"use strict";
 		return (
 			<div className="topic">
-				{this.state.id > 0 ?
+				{ this.state.id > 0 ?
 					<div>
 						<h1>{this.state.title}</h1>
-						{this.props.page.state.userName !== "" ? 
+						{ this.areActionsVisible() ? 
 							<div>
 								{this.isDeleteButtonVisible() ? <button onClick={this.delete}>Delete</button> : null}
 								<button onClick={this.toggleMessageWriterVisibility}>New message</button>
@@ -431,16 +441,31 @@ var TopicList = React.createClass({
 });
 
 var Forum = React.createClass({
+	getInitialState: function() {
+		"use strict";
+		return {
+			id: 1
+		};
+	},
+	
 	getTopics: function() {
 		"use strict";
 		this.refs.topicList.getTopics();
+	},
+	
+	isTopicWriterVisible: function() {
+		if (this.props.page.isUserBanned())
+			return false;
+		if (this.props.page.state.user.name === "")
+			return false;
+		return true;
 	},
 
 	render: function() {
 		"use strict";
 		return (
 			<div className="forum">
-				{this.props.page.state.userName !== "" ? <TopicWriter forum={this} /> : null}
+				{this.isTopicWriterVisible() ? <TopicWriter forum={this} /> : null}
 				<TopicList ref="topicList" forum={this} />
 			</div>
 		);
@@ -553,7 +578,7 @@ var LoginBar = React.createClass({
 			dataType: "json",
 			cache: false,
 			success: function(data) {
-				this.props.page.setUserName(data.name);
+				this.props.page.setUser(data);
 			}.bind(this),
 			error: function(xhr, status, error) {
 				console.error("LoginBar.sendLogin: ", status, error.toString());
@@ -574,7 +599,7 @@ var LoginBar = React.createClass({
 			dataType: "json",
 			cache: false,
 			success: function(data) {
-				this.props.page.setUserName(data.name);
+				this.props.page.setUser(data);
 			}.bind(this),
 			error: function(xhr, status, error) {
 				console.error("LoginBar.sendRegistration: ", status, error.toString());
@@ -607,20 +632,20 @@ var LogoutBar = React.createClass({
 			dataType: "text",
 			cache: false,
 			success: function(data) {
-				this.props.page.setUserName("");
+				this.props.page.setUser(this.props.page.getInitialState().user);
 			}.bind(this),
 			error: function(xhr, status, error) {
 				console.error("LogoutBar.sendLogout: ", status, error.toString());
 			}
 		});
 	},
-
+	
 	render: function() {
 		"use strict";
 		return (
 			<div className="loginBar">
 				<div className="loginButtons">
-					Logged in as: {this.props.page.state.userName}
+					Logged in as: {this.props.page.state.user.name}
 					<button onClick={this.logout_onClick}>Log out</button>
 				</div>
 			</div>
@@ -632,17 +657,46 @@ var Page = React.createClass({
 	getInitialState: function() {
 		"use strict";
 		return ({
-			userName: "",
+			user: {
+				id: -1,
+				name: "",
+				bans: [],
+				privileges: []
+			},
 		});
 	},
-
-	setUserName: function(userName) {
+	
+	setUser: function(user) {
 		"use strict";
 		var state = this.state;
-		state.userName = userName;
+		state.user = user;
 		this.setState(state);
 	},
-
+	
+	isUserModerator: function() {
+		var forum = this.refs.forum;
+		var privileges = this.state.user.privileges;
+		for (var i = 0; i < privileges.length; i++) {
+			var privilege = privileges[i];
+			if (forum.state.id == privilege.forumId) {
+				return true;
+			}
+		}
+		return false;
+	},
+	
+	isUserBanned: function() {
+		var forum = this.refs.forum;
+		var bans = this.state.user.bans;
+		for (var i = 0; i < bans.length; i++) {
+			var ban = bans[i];
+			if (forum.state.id == ban.forumId) {
+				return true;
+			}
+		}
+		return false;
+	},
+	
 	componentDidMount: function() {
 		"use strict";
 		$.ajax({
@@ -650,7 +704,7 @@ var Page = React.createClass({
 			dataType: "json",
 			cache: false,
 			success: function(session) {
-				this.setUserName(session.user.name);
+				this.setUser(session.user);
 			}.bind(this),
 			error: function(xhr, status, error) {
 				console.error("Page.componentDidMount: ", status, error.toString());
@@ -677,7 +731,7 @@ var Page = React.createClass({
 					<h1>Yet Another Posting Board</h1>
 				</div>
 				<div className="pageContent">
-					{this.state.userName === "" ? <LoginBar page={this} /> : <LogoutBar page={this} />}
+					{this.state.user.name === "" ? <LoginBar page={this} /> : <LogoutBar page={this} />}
 					<Forum ref="forum" page={this}/>
 					<Topic ref="topic" page={this}/>
 				</div>

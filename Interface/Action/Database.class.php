@@ -57,6 +57,7 @@ SQL;
 			$statement->execute();
 			return array("result" => "success");
 		}
+		return array("result" => "error");
 	}
 	
 	function deleteMessage($messageId, $userId)
@@ -79,6 +80,7 @@ SQL;
 			$statement->execute();
 			return array("result" => "success");
 		}
+		return array("result" => "error");
 	}
 	
 	function getTopic($id)
@@ -91,11 +93,11 @@ SQL;
 		$statement->bindValue(':id', $id, PDO::PARAM_INT);
 		$statement->execute();
 
-		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
+		if ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
 		{
 			return $this->getTopicFromRow($row);
 		}
-		return null;
+		return array("result" => "error");
 	}
 	
 	function getTopics()
@@ -173,7 +175,10 @@ SQL;
 			$statement = $this->pdo->prepare($query);
 			$statement->bindValue(":id", $id, PDO::PARAM_INT);
 			$statement->execute();
+			
+			return array("result" => "success");
 		}
+		return array("result" => "error");
 	}
 	
 	function getMessages($topicId)
@@ -191,14 +196,25 @@ SQL;
 
 		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
 		{
+			$messageId = $row["Id"];
 			$userId = $row["UserId"];
 			$user = $this->getUser($userId);
+			$userStatus = "normal";
+			if ($this->isUserBannedFromMessage($userId, $messageId))
+			{
+				$userStatus = "banned";
+			}
+			if ($this->isUserModeratorOfMessage($userId, $messageId))
+			{
+				$userStatus = "moderator";
+			}
 
 			$messages[] = array (
-				"id" => $row["Id"],
+				"id" => $messageId,
 				"avatar" => $user["AvatarUrl"],
 				"userId" => $user["Id"],
 				"userName" => $user["Name"],
+				"userStatus" => $userStatus,
 				"text" => $row["Text"],
 				"posted" => $row["Posted"]
 			);
@@ -217,7 +233,7 @@ SQL;
 		{
 			return $row;
 		}
-		return null;
+		return array("result" => "error");
 	}
 	
 	function addForum($title)
@@ -244,7 +260,7 @@ SQL;
 			);
 			return $forum;
 		}
-		return null;
+		return array("result" => "error");
 	}
 	
 	function addModerator($userId, $forumId)
@@ -278,28 +294,38 @@ SQL;
 	
 	function banUser($targetUserId, $forumId, $moderatorUserId)
 	{
-		$sql = <<<SQL
-		SELECT * FROM Moderator 
-		WHERE UserId = :moderatorUserId
-		AND ForumId = :forumId;
-SQL;
-		$statement = $this->pdo->prepare($sql);
-		$statement->bindValue(':moderatorUserId', $moderatorUserId, PDO::PARAM_INT);
-		$statement->bindValue(':forumId', $forumId, PDO::PARAM_INT);
-		$statement->execute();
-
-		$isModeratorValid = $statement->fetch(PDO::FETCH_ASSOC);
-		if ($isModeratorValid)
+		if ($this->isUserModeratorOfForum($moderatorUserId, $forumId))
 		{
 			$sql = <<<SQL
-			INSERT INTO Ban(UserId, ForumId, Expires)
+			REPLACE INTO Ban(UserId, ForumId, Expires)
 			VALUES (:targetUserId, :forumId, DATE_ADD(NOW(), INTERVAL 7 DAY));
 SQL;
 			$statement = $this->pdo->prepare($sql);
 			$statement->bindValue(':targetUserId', $targetUserId, PDO::PARAM_INT);
 			$statement->bindValue(':forumId', $forumId, PDO::PARAM_INT);
 			$statement->execute();
+			return array("result" => "success");
 		}
+		return array("result" => "error");
+	}
+	
+	function unbanUser($targetUserId, $forumId, $moderatorUserId)
+	{
+		if ($this->isUserModeratorOfForum($moderatorUserId, $forumId))
+		{
+			$sql = <<<SQL
+			UPDATE Ban
+			SET Expires = NOW()
+			WHERE UserId = :targetUserId
+			AND ForumId = :forumId;
+SQL;
+			$statement = $this->pdo->prepare($sql);
+			$statement->bindValue(':targetUserId', $targetUserId, PDO::PARAM_INT);
+			$statement->bindValue(':forumId', $forumId, PDO::PARAM_INT);
+			$statement->execute();
+			return array("result" => "success");
+		}
+		return array("result" => "error");
 	}
 	
 	function authenticateUser($name, $password)
@@ -316,15 +342,62 @@ SQL;
 
 		if ($this->passwordLib->verifyPasswordHash($password, $row["Password"]))
 		{
+			$id = $row["Id"];
+			$bans = $this->getUserBans($id);
+			$privileges = $this->getUserModeratorPrivileges($id);
 			$user = array(
-				"id" => $row["Id"],
-				"name" => $row["Name"]
+				"id" => $id,
+				"name" => $row["Name"],
+				"bans" => $bans,
+				"privileges" => $privileges
 			);
 			return $user;
 		}
 		return array("result" => "failure");
 	}
 	
+	function getUserBans($userId)
+	{
+		$sql = <<<SQL
+		SELECT * FROM Ban
+		WHERE UserId = :userId
+		AND Expires > NOW();
+SQL;
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+		$statement->execute();
+		
+		$bans = array();
+		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
+		{
+			$bans[] = array(
+				"forumId" => $row["ForumId"],
+				"expires" => $row["Expires"]
+			);
+		}
+		return $bans;
+	}
+	
+	function getUserModeratorPrivileges($userId)
+	{
+		$sql = <<<SQL
+		SELECT * FROM Moderator
+		WHERE UserId = :userId;
+SQL;
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+		$statement->execute();
+		
+		$privileges = array();
+		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
+		{
+			$privileges[] = array(
+				"forumId" => $row["ForumId"]
+			);
+		}
+		return $privileges;
+	}
+		
 	function deleteAll()
 	{
 		$this->pdo->query("DELETE FROM Moderator;");
