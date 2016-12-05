@@ -93,7 +93,7 @@ SQL;
 		$statement->bindValue(':id', $id, PDO::PARAM_INT);
 		$statement->execute();
 
-		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
+		if ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
 		{
 			return $this->getTopicFromRow($row);
 		}
@@ -312,13 +312,38 @@ SQL;
 
 		if ($this->passwordLib->verifyPasswordHash($password, $row["Password"]))
 		{
+			$id = $row["Id"];
+			$bans = $this->getUserBans($id);
 			$user = array(
-				"id" => $row["Id"],
-				"name" => $row["Name"]
+				"id" => $id,
+				"name" => $row["Name"],
+				"bans" => $bans
 			);
 			return $user;
 		}
 		return array("result" => "failure");
+	}
+	
+	function getUserBans($userId)
+	{
+		$sql = <<<SQL
+		SELECT * FROM Ban
+		WHERE UserId = :userId
+		AND Expires > NOW();
+SQL;
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+		$statement->execute();
+		
+		$bans = array();
+		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
+		{
+			$bans[] = array(
+				"forumId" => $row["ForumId"],
+				"expires" => $row["Expires"]
+			);
+		}
+		return $bans;
 	}
 	
 	function deleteAll()

@@ -4,7 +4,8 @@ $session = array();
 
 $user = array(
 	"id" => -1,
-	"name" => ""
+	"name" => "",
+	"bans" => array()
 );
 if (isset($_SESSION["user"]))
 {
