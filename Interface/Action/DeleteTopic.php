@@ -9,4 +9,7 @@ if ($userId === -1)
 require_once("Database.class.php");
 $database = new Database();
 $topicId = $_REQUEST["id"];
-$database->deleteTopic($topicId, $userId);
+$result = $database->deleteTopic($topicId, $userId);
+$response = json_encode($result);
+header("Content-type: application/json");
+echo $response;

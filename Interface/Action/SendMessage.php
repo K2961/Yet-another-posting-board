@@ -10,4 +10,7 @@ require_once("Database.class.php");
 $database = new Database();
 $topicId = $_REQUEST["topicId"];
 $text = $_REQUEST["message"];
-$database->sendMessage($topicId, $userId, $text);
+$result = $database->sendMessage($topicId, $userId, $text);
+$response = json_encode($result);
+header("Content-type: application/json");
+echo $response;

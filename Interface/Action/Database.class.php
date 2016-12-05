@@ -7,7 +7,7 @@ class Database
 {
 	private $pdo;
 	private $passwordLib;
-
+	
 	function __construct()
 	{
 		$this->pdo = new PDO("mysql:host=".DB_HOST.";dbname=".DB_NAME.";charset=utf8", DB_USER, DB_PASSWORD);
@@ -16,14 +16,14 @@ class Database
 
 		$this->passwordLib = new PasswordLib\PasswordLib();
 	}
-
+	
 	function sendMessage($topicId, $userId, $text)
 	{
 		if ($this->isUserBannedFromTopic($userId, $topicId))
 		{
-			return;
+			return array("result" => "banned");
 		}
-		
+
 		$query = <<<SQL
 		INSERT INTO Message(TopicId, UserId, Text, Posted)
 		VALUES (:topicId, :userId, :text, NOW());
@@ -33,46 +33,54 @@ SQL;
 		$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
 		$statement->bindValue(':text', $text, PDO::PARAM_STR);
 		$statement->execute();
+		return array("result" => "success");
 	}
-
+	
 	function editMessage($messageId, $userId, $text)
 	{
 		if ($this->isUserBannedFromMessage($userId, $messageId))
 		{
-			return;
+			return array("result" => "banned");
 		}
-		
-		$query = <<<SQL
-		UPDATE Message
-		SET Text = :text
-		WHERE Id = :messageId;
+		else if ($this->isUserOwnerOfMessage($userId, $messageId)
+				|| $this->isUserModeratorOfMessage($userId, $messageId))
+		{
+			$query = <<<SQL
+			UPDATE Message
+			SET Text = :text
+			WHERE Id = :messageId;
 SQL;
-		// AND UserId = :userId
-		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(':messageId', $messageId, PDO::PARAM_INT);
-		//$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
-		$statement->bindValue(':text', $text, PDO::PARAM_STR);
-		$statement->execute();
+			$statement = $this->pdo->prepare($query);
+			$statement->bindValue(':messageId', $messageId, PDO::PARAM_INT);
+			$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$statement->bindValue(':text', $text, PDO::PARAM_STR);
+			$statement->execute();
+			return array("result" => "success");
+		}
 	}
-
+	
 	function deleteMessage($messageId, $userId)
 	{
 		if ($this->isUserBannedFromMessage($userId, $messageId))
 		{
-			return;
-		}
-		
-		$query = <<<SQL
-		DELETE FROM Message 
-		WHERE Id = :messageId;
+			return array("result" => "banned");
+		}		
+		else if ($this->isUserOwnerOfMessage($userId, $messageId)
+				|| $this->isUserModeratorOfMessage($userId, $messageId))
+		{
+			$query = <<<SQL
+			DELETE FROM Message 
+			WHERE Id = :messageId
+			AND UserId = :userId;
 SQL;
-		// AND UserId = :userId
-		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(':messageId', $messageId, PDO::PARAM_INT);
-		//$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
-		$statement->execute();
+			$statement = $this->pdo->prepare($query);
+			$statement->bindValue(':messageId', $messageId, PDO::PARAM_INT);
+			$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$statement->execute();
+			return array("result" => "success");
+		}
 	}
-
+	
 	function getTopic($id)
 	{
 		$query = <<<SQL
@@ -89,7 +97,7 @@ SQL;
 		}
 		return null;
 	}
-
+	
 	function getTopics()
 	{
 		$topics = array();
@@ -100,7 +108,7 @@ SQL;
 		}
 		return $topics;
 	}
-
+	
 	function getTopicFromRow($row)
 	{
 		$userId = $row["UserId"];
@@ -121,14 +129,14 @@ SQL;
 			"lastPost" => $lastPost
 		);
 	}
-
+	
 	function sendTopic($userId, $forumId, $title)
 	{
 		if ($this->isUserBannedFromForum($userId, $forumId))
 		{
-			return;
+			return array("result" => "banned");
 		}
-		
+
 		$query = <<<SQL
 		INSERT INTO Topic(UserId, ForumId, Title, Posted)
 		VALUES (:userId, :forumId, :title, NOW());
@@ -138,27 +146,17 @@ SQL;
 		$statement->bindValue(':forumId', $forumId, PDO::PARAM_INT);
 		$statement->bindValue(':title', $title, PDO::PARAM_STR);
 		$statement->execute();
+		return array("result" => "success");
 	}
-
+	
 	function deleteTopic($id, $userId)
 	{
 		if ($this->isUserBannedFromTopic($userId, $id))
 		{
-			return;
+			return array("result" => "banned");
 		}
-		
-		$query = <<<SQL
-		SELECT * FROM Topic
-		WHERE Id = :id;
-SQL;
-		// AND UserId = :userId
-		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(":id", $id, PDO::PARAM_INT);
-		//$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
-		$statement->execute();
-
-		$topicMatchesUser = $statement->fetch(PDO::FETCH_ASSOC);
-		if ($topicMatchesUser)
+		if ($this->isUserOwnerOfTopic($userId, $id)
+		   || $this->isUserModeratorOftopic($userId, $id))
 		{
 			$query = <<<SQL
 			DELETE FROM Message
@@ -177,7 +175,7 @@ SQL;
 			$statement->execute();
 		}
 	}
-
+	
 	function getMessages($topicId)
 	{
 		$messages = array();
@@ -207,7 +205,7 @@ SQL;
 		}
 		return $messages;
 	}
-
+	
 	function getUser($userId)
 	{
 		$sql = "SELECT * FROM User WHERE Id=:id";
@@ -221,7 +219,7 @@ SQL;
 		}
 		return null;
 	}
-
+	
 	function addForum($title)
 	{
 		$sql = <<<SQL
@@ -248,7 +246,7 @@ SQL;
 		}
 		return null;
 	}
-
+	
 	function addModerator($userId, $forumId)
 	{
 		$sql = <<<SQL
@@ -260,7 +258,7 @@ SQL;
 		$statement->bindValue(":forumId", $forumId, PDO::PARAM_INT);
 		$statement->execute();
 	}
-
+	
 	function addUser($name, $password, $avatarUrl)
 	{	
 		$passwordHash = $this->passwordLib->createPasswordHash($password,  '$2a$', array('cost' => 12));
@@ -277,7 +275,7 @@ SQL;
 
 		return $this->authenticateUser($name, $password);
 	}
-
+	
 	function banUser($targetUserId, $forumId, $moderatorUserId)
 	{
 		$sql = <<<SQL
@@ -304,63 +302,6 @@ SQL;
 		}
 	}
 	
-	function isUserBannedFromMessage($userId, $messageId)
-	{
-		$sql = <<<SQL
-		SELECT * FROM Ban
-		WHERE UserId = :userId
-		AND ForumId IN 
-		(SELECT ForumId FROM Topic WHERE Id IN 
-		(SELECT TopicId FROM Message WHERE Id = :messageId))
-		AND Expires > NOW();
-SQL;
-		$statement = $this->pdo->prepare($sql);
-		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
-		$statement->bindValue(":messageId", $topicId, PDO::PARAM_INT);
-		$statement->execute();
-		
-		if ($statement->fetch(PDO::FETCH_ASSOC))
-			return true;
-		return false;
-	}
-	
-	function isUserBannedFromTopic($userId, $topicId)
-	{
-		$sql = <<<SQL
-		SELECT * FROM Ban
-		WHERE UserId = :userId
-		AND ForumId IN 
-		(SELECT ForumId FROM Topic WHERE Id = :topicId)
-		AND Expires > NOW();
-SQL;
-		$statement = $this->pdo->prepare($sql);
-		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
-		$statement->bindValue(":topicId", $topicId, PDO::PARAM_INT);
-		$statement->execute();
-		
-		if ($statement->fetch(PDO::FETCH_ASSOC))
-			return true;
-		return false;
-	}
-	
-	function isUserBannedFromForum($userId, $forumId)
-	{
-		$sql = <<<SQL
-		SELECT * FROM Ban
-		WHERE UserId = :userId
-		AND ForumId = :forumId
-		AND Expires > NOW();
-SQL;
-		$statement = $this->pdo->prepare($sql);
-		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
-		$statement->bindValue(":forumId", $forumId, PDO::PARAM_INT);
-		$statement->execute();
-		
-		if ($statement->fetch(PDO::FETCH_ASSOC))
-			return true;
-		return false;
-	}
-	
 	function authenticateUser($name, $password)
 	{
 		$query = <<<SQL
@@ -381,9 +322,9 @@ SQL;
 			);
 			return $user;
 		}
-		return null;
+		return array("result" => "failure");
 	}
-
+	
 	function deleteAll()
 	{
 		$this->pdo->query("DELETE FROM Moderator;");
@@ -392,5 +333,134 @@ SQL;
 		$this->pdo->query("DELETE FROM Topic;");
 		$this->pdo->query("DELETE FROM Forum;");
 		$this->pdo->query("DELETE FROM User;");
+	}
+	
+	function isUserOwnerOfMessage($userId, $messageId)
+	{
+		$sql = <<<SQL
+		SELECT * FROM Message
+		WHERE Id = :messageId
+		AND UserId = :userId
+SQL;
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
+		$statement->bindValue(":messageId", $messageId, PDO::PARAM_INT);
+		$statement->execute();
+		
+		if ($statement->fetch(PDO::FETCH_ASSOC))
+			return true;
+		return false;
+	}
+	
+	function isUserOwnerOfTopic($userId, $topicId)
+	{
+		$sql = <<<SQL
+		SELECT * FROM Topic
+		WHERE Id = :topicId
+		AND UserId = :userId
+SQL;
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
+		$statement->bindValue(":topicId", $topicId, PDO::PARAM_INT);
+		$statement->execute();
+		
+		if ($statement->fetch(PDO::FETCH_ASSOC))
+			return true;
+		return false;
+	}
+	
+	function isUserBannedFromMessage($userId, $messageId)
+	{
+		$topicId = $this->getTopicIdFromMessage($messageId);
+		return $this->isUserBannedFromTopic($userId, $topicId);
+	}
+	
+	function isUserBannedFromTopic($userId, $topicId)
+	{
+		$forumId = $this->getForumIdFromTopic($topicId);
+		return $this->isUserBannedFromForum($userId, $forumId);
+	}
+	
+	function isUserBannedFromForum($userId, $forumId)
+	{
+		$sql = <<<SQL
+		SELECT * FROM Ban
+		WHERE UserId = :userId
+		AND ForumId = :forumId
+		AND Expires > NOW();
+SQL;
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
+		$statement->bindValue(":forumId", $forumId, PDO::PARAM_INT);
+		$statement->execute();
+
+		if ($statement->fetch(PDO::FETCH_ASSOC))
+			return true;
+		return false;
+	}
+	
+	function isUserModeratorOfMessage($userId, $messageId)
+	{
+		$topicId = $this->getTopicIdFromMessage($messageId);
+		return $this->isUserModeratorOfTopic($userId, $topicId);
+	}
+	
+	function isUserModeratorOfTopic($userId, $topicId)
+	{
+		$forumId = $this->getForumIdFromTopic($topicId);
+		return $this->isUserModeratorOfForum($userId, $forumId);
+	}
+	
+	function isUserModeratorOfForum($userId, $forumId)
+	{
+		$sql = <<<SQL
+		SELECT * FROM Moderator
+		WHERE UserId = :userId
+		AND ForumId = :forumId;
+SQL;
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
+		$statement->bindValue(":forumId", $forumId, PDO::PARAM_INT);
+		$statement->execute();
+		
+		if ($statement->fetch(PDO::FETCH_ASSOC))
+			return true;
+		return false;
+	}
+	
+	function getTopicIdFromMessage($messageId)
+	{
+		$sql = <<<SQL
+		SELECT TopicId FROM Message
+		WHERE Id = :messageId;
+SQL;
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(":messageId", $messageId, PDO::PARAM_INT);
+		$statement->execute();
+
+		$row = $statement->fetch(PDO::FETCH_ASSOC);
+		if ($row)
+		{
+			return $row["TopicId"];
+		}
+		return -1;
+	}
+	
+	function getForumIdFromTopic($topicId)
+	{
+		$sql = <<<SQL
+		SELECT ForumId FROM Topic
+		WHERE Id = :topicId;
+SQL;
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(":topicId", $topicId, PDO::PARAM_INT);
+		$statement->execute();
+		
+		$row = $statement->fetch(PDO::FETCH_ASSOC);
+		if ($row)
+		{
+			return $row["ForumId"];
+		}
+		return -1;
 	}
 }
