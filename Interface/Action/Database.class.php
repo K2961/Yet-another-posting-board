@@ -57,6 +57,7 @@ SQL;
 			$statement->execute();
 			return array("result" => "success");
 		}
+		return array("result" => "error");
 	}
 	
 	function deleteMessage($messageId, $userId)
@@ -79,6 +80,7 @@ SQL;
 			$statement->execute();
 			return array("result" => "success");
 		}
+		return array("result" => "error");
 	}
 	
 	function getTopic($id)
@@ -95,7 +97,7 @@ SQL;
 		{
 			return $this->getTopicFromRow($row);
 		}
-		return null;
+		return array("result" => "error");
 	}
 	
 	function getTopics()
@@ -173,7 +175,10 @@ SQL;
 			$statement = $this->pdo->prepare($query);
 			$statement->bindValue(":id", $id, PDO::PARAM_INT);
 			$statement->execute();
+			
+			return array("result" => "success");
 		}
+		return array("result" => "error");
 	}
 	
 	function getMessages($topicId)
@@ -217,7 +222,7 @@ SQL;
 		{
 			return $row;
 		}
-		return null;
+		return array("result" => "error");
 	}
 	
 	function addForum($title)
@@ -244,7 +249,7 @@ SQL;
 			);
 			return $forum;
 		}
-		return null;
+		return array("result" => "error");
 	}
 	
 	function addModerator($userId, $forumId)
@@ -288,7 +293,9 @@ SQL;
 			$statement->bindValue(':targetUserId', $targetUserId, PDO::PARAM_INT);
 			$statement->bindValue(':forumId', $forumId, PDO::PARAM_INT);
 			$statement->execute();
+			return array("result" => "success");
 		}
+		return array("result" => "error");
 	}
 	
 	function authenticateUser($name, $password)
