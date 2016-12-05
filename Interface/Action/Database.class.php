@@ -196,14 +196,25 @@ SQL;
 
 		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
 		{
+			$messageId = $row["Id"];
 			$userId = $row["UserId"];
 			$user = $this->getUser($userId);
+			$userStatus = "normal";
+			if ($this->isUserBannedFromMessage($userId, $messageId))
+			{
+				$userStatus = "banned";
+			}
+			if ($this->isUserModeratorOfMessage($userId, $messageId))
+			{
+				$userStatus = "moderator";
+			}
 
 			$messages[] = array (
-				"id" => $row["Id"],
+				"id" => $messageId,
 				"avatar" => $user["AvatarUrl"],
 				"userId" => $user["Id"],
 				"userName" => $user["Name"],
+				"userStatus" => $userStatus,
 				"text" => $row["Text"],
 				"posted" => $row["Posted"]
 			);
