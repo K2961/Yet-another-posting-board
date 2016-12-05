@@ -278,18 +278,7 @@ SQL;
 	
 	function banUser($targetUserId, $forumId, $moderatorUserId)
 	{
-		$sql = <<<SQL
-		SELECT * FROM Moderator 
-		WHERE UserId = :moderatorUserId
-		AND ForumId = :forumId;
-SQL;
-		$statement = $this->pdo->prepare($sql);
-		$statement->bindValue(':moderatorUserId', $moderatorUserId, PDO::PARAM_INT);
-		$statement->bindValue(':forumId', $forumId, PDO::PARAM_INT);
-		$statement->execute();
-
-		$isModeratorValid = $statement->fetch(PDO::FETCH_ASSOC);
-		if ($isModeratorValid)
+		if ($this->isUserModeratorOfForum($moderatorUserId, $forumId))
 		{
 			$sql = <<<SQL
 			INSERT INTO Ban(UserId, ForumId, Expires)
