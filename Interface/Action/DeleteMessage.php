@@ -9,4 +9,7 @@ if ($userId === -1)
 require_once("Database.class.php");
 $database = new Database();
 $messageId = $_REQUEST["id"];
-$database->deleteMessage($messageId, $userId);
+$result = $database->deleteMessage($messageId, $userId);
+$response = json_encode($result);
+header("Content-type: application/json");
+echo $response;

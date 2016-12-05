@@ -9,4 +9,7 @@ if ($userId === -1)
 require_once("Database.class.php");
 $database = new Database();
 $title = $_REQUEST["title"];
-$database->sendTopic($userId, 1, $title);
+$result = $database->sendTopic($userId, 1, $title);
+$response = json_encode($result);
+header("Content-type: application/json");
+echo $response;

@@ -8,7 +8,8 @@ if ($user !== null)
 {
     session_start();
     $_SESSION["user"] = $user;
-    $response = json_encode($user);
-    header("Content-type: application/json");
-    echo $response;
 }
+$response = json_encode($user);
+header("Content-type: application/json");
+echo $response;
+exit();

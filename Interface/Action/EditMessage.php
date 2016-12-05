@@ -10,4 +10,7 @@ require_once("Database.class.php");
 $database = new Database();
 $messageId = $_REQUEST["id"];
 $text = $_REQUEST["text"];
-$database->editMessage($messageId, $userId, $text);
+$result = $database->editMessage($messageId, $userId, $text);
+$response = json_encode($result);
+header("Content-type: application/json");
+echo $response;
