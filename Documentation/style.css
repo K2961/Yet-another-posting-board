@@ -14,3 +14,19 @@ section{
 h1 {
 	font-size: 2em;
 }
+tr th{
+	border: 1px solid black;
+	padding: 1px;
+}
+th{
+	border: 1px solid black;
+}
+td{
+	border: 1px solid black;
+	text-align: center;
+}
+table{
+	border: 1px solid black;
+	padding: 5px;
+	width: 100%;
+}
