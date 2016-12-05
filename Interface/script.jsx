@@ -265,8 +265,8 @@ var Topic = React.createClass({
 	isDeleteButtonVisible: function() {
 		"use strict";
 		var page = this.props.page;
-		if (page.state.user.name === "Admin")
-			return true; // Dirty hack, remove later.
+		if (page.isUserModerator())
+			return true;
 		return this.state.userName === page.state.user.name;
 	},
 
@@ -660,7 +660,8 @@ var Page = React.createClass({
 			user: {
 				id: -1,
 				name: "",
-				bans: []
+				bans: [],
+				privileges: []
 			},
 		});
 	},
@@ -673,8 +674,14 @@ var Page = React.createClass({
 	},
 	
 	isUserModerator: function() {
-		if (this.state.user.name === "Admin")
-			return true; // Dirty hack, remove later.
+		var forum = this.refs.forum;
+		var privileges = this.state.user.privileges;
+		for (var i = 0; i < privileges.length; i++) {
+			var privilege = privileges[i];
+			if (forum.state.id == privilege.forumId) {
+				return true;
+			}
+		}
 		return false;
 	},
 	
