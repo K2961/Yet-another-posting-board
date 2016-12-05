@@ -84,7 +84,7 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    background-color: lightblue;
+    background-color: #91AA9D;
     opacity: 1;
 }
 .loginPopup{
@@ -93,7 +93,7 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    background-color: lightblue;
+    background-color: #91AA9D;
     opacity: 1;
 }
 .loginBar{
@@ -101,6 +101,11 @@
 	overflow: auto;
 	margin-left: auto;
 	margin-right: auto;
+}
+button{
+	background-color: #008CBA;
+	border: 0.03em solid darkblue;
+	color: white;
 }
 .loginButtons{
 	float: right;
