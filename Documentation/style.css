@@ -1,0 +1,16 @@
+body{
+	background-color: lightblue;
+}
+.page{
+	margin-left: auto;
+	margin-right: auto;
+	width: 30em;
+	background-color: whitesmoke;
+	padding: 1em;
+}
+section{
+	margin-bottom: 2em;
+}
+h1 {
+	font-size: 2em;
+}
