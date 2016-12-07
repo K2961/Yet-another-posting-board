@@ -533,7 +533,7 @@ var LoginPopup = React.createClass({
 					<tbody>
 						<tr>
 							<td>Username</td>
-							<td><input ref="username" type="text"></input></td>
+							<td><input ref="username" type="text" autoFocus="true"></input></td>
 						</tr>
 						<tr>
 							<td>Password</td>
@@ -568,7 +568,7 @@ var RegisterPopup = React.createClass({
 					<tbody>
 						<tr>
 							<td>Username</td>
-							<td><input ref="username" type="text"></input></td>
+							<td><input ref="username" type="text" autoFocus="true"></input></td>
 						</tr>
 						<tr>
 							<td>Password</td>
@@ -593,7 +593,7 @@ var LoginBar = React.createClass({
 	},
 
 	login_onClick: function() { 
-		"use strict";       
+		"use strict";
 		this.setState({
 			isLoginVisible: ! this.state.isLoginVisible,
 			isRegisterVisible: false
