@@ -29,9 +29,9 @@ class Database
 		VALUES (:topicId, :userId, :text, NOW());
 SQL;
 		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(':topicId', $topicId, PDO::PARAM_INT);
-		$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
-		$statement->bindValue(':text', $text, PDO::PARAM_STR);
+		$statement->bindValue(":topicId", $topicId, PDO::PARAM_INT);
+		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
+		$statement->bindValue(":text", $text, PDO::PARAM_STR);
 		$statement->execute();
 		return array("result" => "success");
 	}
@@ -51,9 +51,9 @@ SQL;
 			WHERE Id = :messageId;
 SQL;
 			$statement = $this->pdo->prepare($query);
-			$statement->bindValue(':messageId', $messageId, PDO::PARAM_INT);
-			$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
-			$statement->bindValue(':text', $text, PDO::PARAM_STR);
+			$statement->bindValue(":messageId", $messageId, PDO::PARAM_INT);
+			$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
+			$statement->bindValue(":text", $text, PDO::PARAM_STR);
 			$statement->execute();
 			return array("result" => "success");
 		}
@@ -75,8 +75,8 @@ SQL;
 			AND UserId = :userId;
 SQL;
 			$statement = $this->pdo->prepare($query);
-			$statement->bindValue(':messageId', $messageId, PDO::PARAM_INT);
-			$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$statement->bindValue(":messageId", $messageId, PDO::PARAM_INT);
+			$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
 			$statement->execute();
 			return array("result" => "success");
 		}
@@ -90,7 +90,7 @@ SQL;
 		WHERE Id = :id;
 SQL;
 		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(':id', $id, PDO::PARAM_INT);
+		$statement->bindValue(":id", $id, PDO::PARAM_INT);
 		$statement->execute();
 
 		if ($row = $statement->fetch(PDO::FETCH_ASSOC)) 
@@ -144,9 +144,9 @@ SQL;
 		VALUES (:userId, :forumId, :title, NOW());
 SQL;
 		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(':userId', $userId, PDO::PARAM_INT);
-		$statement->bindValue(':forumId', $forumId, PDO::PARAM_INT);
-		$statement->bindValue(':title', $title, PDO::PARAM_STR);
+		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
+		$statement->bindValue(":forumId", $forumId, PDO::PARAM_INT);
+		$statement->bindValue(":title", $title, PDO::PARAM_STR);
 		$statement->execute();
 		return array("result" => "success");
 	}
@@ -284,9 +284,9 @@ SQL;
 		VALUES (:name, :password, :avatarUrl, NOW());
 SQL;
 		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(':name', $name, PDO::PARAM_STR);
-		$statement->bindValue(':password', $passwordHash, PDO::PARAM_STR);
-		$statement->bindValue(':avatarUrl', $avatarUrl, PDO::PARAM_STR);
+		$statement->bindValue(":name", $name, PDO::PARAM_STR);
+		$statement->bindValue(":password", $passwordHash, PDO::PARAM_STR);
+		$statement->bindValue(":avatarUrl", $avatarUrl, PDO::PARAM_STR);
 		$statement->execute();
 
 		return $this->authenticateUser($name, $password);
@@ -301,8 +301,8 @@ SQL;
 			VALUES (:targetUserId, :forumId, DATE_ADD(NOW(), INTERVAL 7 DAY));
 SQL;
 			$statement = $this->pdo->prepare($sql);
-			$statement->bindValue(':targetUserId', $targetUserId, PDO::PARAM_INT);
-			$statement->bindValue(':forumId', $forumId, PDO::PARAM_INT);
+			$statement->bindValue(":targetUserId", $targetUserId, PDO::PARAM_INT);
+			$statement->bindValue(":forumId", $forumId, PDO::PARAM_INT);
 			$statement->execute();
 			return array("result" => "success");
 		}
@@ -320,8 +320,8 @@ SQL;
 			AND ForumId = :forumId;
 SQL;
 			$statement = $this->pdo->prepare($sql);
-			$statement->bindValue(':targetUserId', $targetUserId, PDO::PARAM_INT);
-			$statement->bindValue(':forumId', $forumId, PDO::PARAM_INT);
+			$statement->bindValue(":targetUserId", $targetUserId, PDO::PARAM_INT);
+			$statement->bindValue(":forumId", $forumId, PDO::PARAM_INT);
 			$statement->execute();
 			return array("result" => "success");
 		}
@@ -335,7 +335,7 @@ SQL;
 		WHERE Name=:name;
 SQL;
 		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(':name', $name, PDO::PARAM_STR);
+		$statement->bindValue(":name", $name, PDO::PARAM_STR);
 		$statement->execute();
 
 		$row = $statement->fetch(PDO::FETCH_ASSOC);
