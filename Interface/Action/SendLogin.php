@@ -4,7 +4,7 @@ $database = new Database();
 $name = $_POST["name"];
 $password = $_POST["password"];
 $result = $database->authenticateUser($name, $password);
-if ($result !== null)
+if (isset($result["user"]))
 {
     session_start();
     $_SESSION["user"] = $result["user"];

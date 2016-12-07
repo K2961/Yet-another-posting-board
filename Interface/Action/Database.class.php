@@ -340,18 +340,25 @@ SQL;
 
 		$row = $statement->fetch(PDO::FETCH_ASSOC);
 
-		if ($this->passwordLib->verifyPasswordHash($password, $row["Password"]))
+		try 
 		{
-			$id = $row["Id"];
-			$bans = $this->getUserBans($id);
-			$privileges = $this->getUserModeratorPrivileges($id);
-			$user = array(
-				"id" => $id,
-				"name" => $row["Name"],
-				"bans" => $bans,
-				"privileges" => $privileges
-			);
-			return array("user" => $user);
+			if ($this->passwordLib->verifyPasswordHash($password, $row["Password"]))
+			{
+				$id = $row["Id"];
+				$bans = $this->getUserBans($id);
+				$privileges = $this->getUserModeratorPrivileges($id);
+				$user = array(
+					"id" => $id,
+					"name" => $row["Name"],
+					"bans" => $bans,
+					"privileges" => $privileges
+				);
+				return array("result" => "success", "user" => $user);
+			}
+		}
+		catch (Exception $exception)
+		{
+			
 		}
 		return array("result" => "failure");
 	}

@@ -8,7 +8,7 @@ if ($name === "Admin") // Dirty hack, remove later.
 $password = $_POST["password"];
 $avatarUrl = "Test.png";
 $result = $database->addUser($name, $password, $avatarUrl);
-if ($user !== null)
+if (isset($result["user"]))
 {
     session_start();
     $_SESSION["user"] = $result["user"];
