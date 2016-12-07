@@ -656,6 +656,8 @@ var LoginBar = React.createClass({
 					<button onClick={this.login_onClick} >Log in</button>
 					<button onClick={this.register_onClick}>Register</button>
 				</div>
+				<br/>
+				<br/>
 				{this.state.isRegisterVisible ? <RegisterPopup send={this.sendRegistration} cancel={this.register_onClick} /> : null}
 				{this.state.isLoginVisible ? <LoginPopup send={this.sendLogin} cancel={this.login_onClick} /> : null}
 			</div>

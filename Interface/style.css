@@ -88,18 +88,24 @@
 .registerPopup{
     visibility: visible;
     border: 1px solid black;
-    position: fixed;
+    float: right;
+	/*
+	position: fixed;
     top: 50%;
     left: 50%;
+	*/
     background-color: #91AA9D;
     opacity: 1;
 }
 .loginPopup{
     visibility: visible;
     border: 1px solid black;
-    position: fixed;
+	float: right;
+    /*
+	position: fixed;
     top: 50%;
     left: 50%;
+	*/
     background-color: #91AA9D;
     opacity: 1;
 }
@@ -108,6 +114,7 @@
 	overflow: auto;
 	margin-left: auto;
 	margin-right: auto;
+	padding: 0.5em;
 }
 button{
 	background-color: #008CBA;
