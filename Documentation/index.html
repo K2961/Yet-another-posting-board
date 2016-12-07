@@ -9,204 +9,229 @@
 <body>
 	<div class="page">
 		<section>
-			<article>
-				<h1>Yet Another Posting Board</h1>
-				<h2>Tekijät: Miska Sainkangas ja Ville Rantala</h2>
-				<h3>Päivämäärä: 05.12.2016</h3>
-				<h3>Kurssien TTMS0500 ja TTMS0900 harjoitustyö.</h3>
-			</article>
+			<h1>Yet Another Posting Board</h1>
+			<h2>Tekijät: Miska Sainkangas ja Ville Rantala</h2>
+			<h3>Päivämäärä: 05.12.2016</h3>
+			<h3>Kurssien TTMS0500 ja TTMS0900 harjoitustyö.</h3>
 		</section>
 		
 		<hr>
 
 		<section>
-			<article>
-				<h2>Esittely</h2>
-				<p>Tämän harjoitustyön tarkoituksena oli tehdä yksinkertainen foorumi-sivusto. Foorumin täytyi sisältää rekisteröitymis- ja kirjautumistoiminnot, sekä käyttöoikeudet eri käyttäjille. Lisäksi foorumissa täytyy olla perus tekstinkäsittelytoimintoja, kuten uuden viestin ja aiheen kirjoitus, muokkaus, sekä poistaminen. Kaikki tieto tallennetaan ja haetaan mySQL tietokannasta sekä salasanat kryptataan.</p>
-			</article>
+			<h2>Esittely</h2>
+			<p>Tämän harjoitustyön tarkoituksena oli tehdä yksinkertainen foorumi-sivusto. Foorumin täytyi sisältää rekisteröitymis- ja kirjautumistoiminnot, sekä käyttöoikeudet eri käyttäjille. Lisäksi foorumissa täytyy olla perus tekstinkäsittelytoimintoja, kuten uuden viestin ja aiheen kirjoitus, muokkaus, sekä poistaminen. Kaikki tieto tallennetaan ja haetaan mySQL tietokannasta sekä salasanat kryptataan.</p>
 		</section>
 
 		<section>
-			<article>
-				<h2>Käytännön toteutus</h2>
-				<p>Harjoitustyössä käytettiin seuraavia tekniikoita: AJAX, CSS, HTML, Javascript, JQuery, MySQL, PHP, React, JSON</p>
-			</article>
+			<h2>Käytännön toteutus</h2>
+			<p>Harjoitustyössä käytettiin seuraavia tekniikoita: AJAX, CSS, HTML, Javascript, JQuery, MySQL, PHP, React, JSON</p>
+			
+			<p>Harjoitustyön käyttöliittymä pohjautuu täysin yhteen sivuun, joka sisältään yhden hierarkisen React-rakenteen, jonka elementtejä lisätään ja poistetaan tilasta riippuen. Tällä saavutetaan se, ettei sivua missään normaalissa käyttötapauksessa ladata kokonaan uudelleen.</p>
+			Page: React-rakenteen pääluokka ja juuri.
+			<ul>
+				<li>LoginBar: Nimestä pääteltävää.</li>
+				<ul>
+					<li>LoginPopup</li>
+					<li>RegisterPopup</li>
+				</ul>
+				
+				<li>LogoutBar</li>
+				<ul>
+					<li>ProfilePopup: Luo käyttöliittymän profiilitietojen muokkaukseen. Tällä hetkellä vain profiilikuva on vaihdettavissa.</li>
+				</ul>
+				
+				<li>Forum: Sisältäisi valitun foorumin komponentit, mutta tällä hetkellä foorumit on hardkoodattu yhteen.</li>
+				<ul>
+					<li>TopicWriter: Käytetään uusien aiheiden lisäämiseen.</li>
+					<li>TopicList: Listaa foorumilla olevat aiheet.</li>
+					<ul>
+						<li>TopicInfo: Antaa käyttäjälle tietoja aiheesta ja tarjoaa linkin aiheeseen siirtymiseen.</li>
+					</ul>
+				</ul>
+				
+				<li>Topic: Sisältää valitun aiheen ja sen manipulointiin käytettävän käyttöliittymän komponentit.</li>
+				<ul>
+					<li>MessageWriter: Käytetään uusien viestejen kirjoittamiseen ja lähettämiseen.</li>
+					<li>MessageContainer: Sisältää kaikki aiheessa olevat Message-komponentit.</li>
+					<ul>
+						<li>Message: Yksittäinen viesti. Sisältää tekstin lisäksi tietoja käyttäjästä ja itse viestistä, sekä tarjoaa käyttöliittymän viestin muokkaukseen/poistamiseen.</li>
+					</ul>
+				</ul>
+			</ul>
+			
+			<p>Palvelinpuolella on "Action"-nimisessä kansiossa useisiin tiedostoihin jaettuja AJAX-toimintoja, jotka kaikki käyttävät yhtä yhteistä PHP-luokkaa nimeltä Database.</p>
 		</section>
 
 		<section>
-			<article>
-				<h2>Ajan käyttö</h2>
-				<table>
-					<tr>
-						<th>Tehtävä</th>
-						<th>Päivä</th>
-						<th>Tunnit</th>
-						<th>Tekijä</th>
-					</tr>
-					<tr>
-						<td>index.php ja style.css lisäys</td>
-						<td>15.11</td>
-						<td>2,5</td>
-						<td>Miska</td>
-					</tr>
+			<h2>Ajan käyttö</h2>
+			<table>
+				<tr>
+					<th>Tehtävä</th>
+					<th>Päivä</th>
+					<th>Tunnit</th>
+					<th>Tekijä</th>
+				</tr>
+				<tr>
+					<td>index.php ja style.css lisäys</td>
+					<td>15.11</td>
+					<td>2,5</td>
+					<td>Miska</td>
+				</tr>
+				
+				<tr>
+					<td>GetMessages.php avatarin, script.jsx messageButtons, Topic title lisäys ja style.css muokkaus</td>
+					<td>16.11</td>
+					<td>3</td>
+					<td>Miska</td>
+				</tr>
+				
+				<tr>
+					<td>Page, login ja register popup, EditMessage.php lisäys ja style.css loginBar ja pageHeader muokkaus</td>
+					<td>18.11</td>
+					<td>2,5</td>
+					<td>Miska</td>
+				</tr>
+				
+				<tr>
+					<td>Aiheiden listauksen, TopicWriter, aiheen poisto, viimeisen postauksen näyttämisen lisäys sekä TopicWriterin piilotus/näyttäminen</td>
+					<td>25.11</td>
+					<td>2</td>
+					<td>Miska</td>
+				</tr>
+				
+				<tr>
+					<td>Ulkonäön parannus</td>
+					<td>29.11</td>
+					<td>1</td>
+					<td>Miska</td>
+				</tr>
+				
+				<tr>
+					<td>Ulkonäön värien parannus</td>
+					<td>30.11</td>
+					<td>2,5</td>
+					<td>Miska</td>
+				</tr>
+				
+				<tr>
+					<td>Nappien värinvaihto, dokumentaation, ajankäyttö taulukon lisäys</td>
+					<td>05.12</td>
+					<td>4</td>
+					<td>Miska</td>
+				</tr>
 					
-					<tr>
-						<td>GetMessages.php avatarin, script.jsx messageButtons, Topic title lisäys ja style.css muokkaus</td>
-						<td>16.11</td>
-						<td>3</td>
-						<td>Miska</td>
-					</tr>
-					
-					<tr>
-						<td>Page, login ja register popup, EditMessage.php lisäys ja style.css loginBar ja pageHeader muokkaus</td>
-						<td>18.11</td>
-						<td>2,5</td>
-						<td>Miska</td>
-					</tr>
-					
-					<tr>
-						<td>Aiheiden listauksen, TopicWriter, aiheen poisto, viimeisen postauksen näyttämisen lisäys sekä TopicWriterin piilotus/näyttäminen</td>
-						<td>25.11</td>
-						<td>2</td>
-						<td>Miska</td>
-					</tr>
-					
-					<tr>
-						<td>Ulkonäön parannus</td>
-						<td>29.11</td>
-						<td>1</td>
-						<td>Miska</td>
-					</tr>
-					
-					<tr>
-						<td>Ulkonäön värien parannus</td>
-						<td>30.11</td>
-						<td>2,5</td>
-						<td>Miska</td>
-					</tr>
-					
-					<tr>
-						<td>Nappien värinvaihto, dokumentaation, ajankäyttö taulukon lisäys</td>
-						<td>05.12</td>
-						<td>4</td>
-						<td>Miska</td>
-					</tr>
-						
-					<tr>
-						<td>Lisäyksiä dokumentaatioon</td>
-						<td>7.12</td>
-						<td>1</td>
-						<td>Miska</td>
-					</tr>
-					
-					<tr>
-						<td id="total">Tunnit yhteensä:</td>
-						<td id="total">7.12</td>
-						<td id="total">18,5</td>
-						<td id="total">Miska</td>
-					</tr>
-					
-					<tr>
-						<td>React classes Topic, Message, MessageContainer</td>
-						<td>15.11</td>
-						<td>2,5</td>
-						<td>Ville</td>
-					</tr>
-					
-					<tr>
-						<td>Alkukantaisen tietokannan lisäys, GetMessages.php tietokannasta hakeminen, testdata.sql ja YAPB-DB-Init.php</td>
-						<td>16.11</td>
-						<td>3</td>
-						<td>Ville</td>
-					</tr>
-					
-					<tr>
-						<td>GetTopic metodi, posted data to json, registration, primitiivinen autentikointi</td>
-						<td>18.11</td>
-						<td>2,5</td>
-						<td>Ville</td>
-					</tr>
-					<tr>
-						<td>alkukantainen autentikointi postauksille,muokkauksille ja poistoille, logoutin lisääminen, edit/delete napin piiloutuminen, salasanojen cryptaus, PathInit.php ->PathConfig.php, SendRegistration.php pientä muutosta.</td>
-						<td>21.11</td>
-						<td>4</td>
-						<td>Ville</td>
-					</tr>
-					
-					<tr>
-						<td>Funktioiden järjestelyä, pakotettu https ja salasanojen piilotus, tyylin samankaltaistus, hieman polun asetuksien muokkausta</td>
-						<td>22.11</td>
-						<td>1</td>
-						<td>Ville</td>
-					</tr>
-					
-					<tr>
-						<td>Php toiminnot kansioon Action, skriptin kaikille funktioille "use strict;", aiheen poistamisen muokkausta, perus aiheen vaihto toiminto, istunnon uudelleen keräys, kun sivu päivittyy, poistamisen ja TopicWriterin piilotus, kun ei kirjautunut sisään</td>
-						<td>25.11</td>
-						<td>4</td>
-						<td>Ville</td>
-					</tr>
-					
-					<tr>
-						<td>Forum, Moderator, Ban taulut tietokantaan, SendTopic korjaus</td>
-						<td>29.11</td>
-						<td>1</td>
-						<td>Ville</td>
-					</tr>
-					
-					<tr>
-						<td>Pienten ongelmien korjaus, SendMessage ja DeleteTopic korjaus, ylimääräisten koodien poisto, alkeellinen panna toiminto</td>
-						<td>30.11</td>
-						<td>5</td>
-						<td>Ville</td>
-					</tr>
-					
-					<tr>
-						<td>Tietokannan koodin parannus, muutamien koodien lyhennys, tulosten lisäys, käyttöliittymän parannus pannatuille käyttäjille, unban toiminto palvelinpuolelle, käyttäjän tilanäkymä viesteihin</td>
-						<td>5.12</td>
-						<td>4</td>
-						<td>Ville</td>
-					</tr>
-					
-					<tr>
-						<td>Käyttöoikeus bugin korjaus, login/session bugin korjaus, PasswordLib poikkeuksen korjaus, tyylin samankaltaistaminen, käyttäjän tilan ilmoittimen lisäys, itsensä pannaamisen estäminen. Login ja rekisteröinti popupit formiksi, ProfilePopup:in lisäys</td>
-						<td>07.12</td>
-						<td>-</td>
-						<td>Ville</td>
-					</tr>
-					
-					<tr>
-						<td id="total">Tunnit yhteensä:</td>
-						<td id="total">-</td>
-						<td id="total">-</td>
-						<td id="total">-</td>
-					</tr>
-					<!--
-					<tr>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
-					-->
-					
-				</table>
-			</article>
+				<tr>
+					<td>Lisäyksiä dokumentaatioon</td>
+					<td>7.12</td>
+					<td>1</td>
+					<td>Miska</td>
+				</tr>
+				
+				<tr>
+					<td id="total">Tunnit yhteensä:</td>
+					<td id="total">-</td>
+					<td id="total">18,5</td>
+					<td id="total">Miska</td>
+				</tr>
+				
+				<tr>
+					<td>React luokat Topic, Message, MessageContainer</td>
+					<td>15.11</td>
+					<td>2,5</td>
+					<td>Ville</td>
+				</tr>
+				
+				<tr>
+					<td>Alkukantaisen tietokannan lisäys, tietokantayhteyden konfigurointi ja viestien hakeminen tietokannasta</td>
+					<td>16.11</td>
+					<td>3</td>
+					<td>Ville</td>
+				</tr>
+				
+				<tr>
+					<td>GetTopic metodi, rekisteröinti, primitiivinen autentikointi</td>
+					<td>18.11</td>
+					<td>2,5</td>
+					<td>Ville</td>
+				</tr>
+				<tr>
+					<td>alkukantainen autentikointi postauksille,muokkauksille ja poistoille, logoutin lisääminen, edit/delete napin piiloutuminen, salasanojen cryptaus, SendRegistration.php pientä muutosta.</td>
+					<td>21.11</td>
+					<td>4</td>
+					<td>Ville</td>
+				</tr>
+				
+				<tr>
+					<td>Funktioiden järjestelyä, pakotettu https ja salasanojen piilotus, tyylin samankaltaistus, hieman polun asetuksien muokkausta</td>
+					<td>22.11</td>
+					<td>1</td>
+					<td>Ville</td>
+				</tr>
+				
+				<tr>
+					<td>Php toiminnot kansioon Action, skriptin kaikille funktioille "use strict;", aiheen poistamisen muokkausta, perus aiheen vaihto toiminto, istunnon uudelleen keräys, kun sivu päivittyy, poistamisen ja TopicWriterin piilotus, kun ei kirjautunut sisään</td>
+					<td>25.11</td>
+					<td>4</td>
+					<td>Ville</td>
+				</tr>
+				
+				<tr>
+					<td>Forum, Moderator, Ban taulut tietokantaan, SendTopic korjaus</td>
+					<td>29.11</td>
+					<td>1</td>
+					<td>Ville</td>
+				</tr>
+				
+				<tr>
+					<td>Pienten ongelmien korjaus, SendMessage ja DeleteTopic korjaus, ylimääräisten koodien poisto, alkeellinen panna toiminto</td>
+					<td>30.11</td>
+					<td>5</td>
+					<td>Ville</td>
+				</tr>
+				
+				<tr>
+					<td>Tietokannan koodin parannus, muutamien koodien lyhennys, tulosten lisäys, käyttöliittymän parannus pannatuille käyttäjille, unban toiminto palvelinpuolelle, käyttäjän tilanäkymä viesteihin</td>
+					<td>5.12</td>
+					<td>4</td>
+					<td>Ville</td>
+				</tr>
+				
+				<tr>
+					<td>Käyttöoikeus bugin korjaus, login/session bugin korjaus, PasswordLib poikkeuksen korjaus, tyylin samankaltaistaminen, käyttäjän tilan ilmoittimen lisäys, itsensä pannaamisen estäminen. Login ja rekisteröinti popupit formiksi, ProfilePopup:in lisäys</td>
+					<td>7.12</td>
+					<td>5</td>
+					<td>Ville</td>
+				</tr>
+				
+				<tr>
+					<td id="total">Tunnit yhteensä:</td>
+					<td id="total">-</td>
+					<td id="total">32</td>
+					<td id="total">Ville</td>
+				</tr>
+				<!--
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				-->
+				
+			</table>
 		</section>
 
 		<section>
-			<article>
-				<h2>Itsearvio</h2>
-				
-				<h3>Miska</h3>
-				<p>Harjoitustyö oli minulle vähän liian vaativa, koska en muistanut melkein yhtään miten Reactia ja tietokantoja käytetään. Harjoitustyötä tehdessä kuitenkin opin, miten foorumisivu tehdään alusta loppuun.</p>
-				<p>Arvosanaehdotus: 2</p>
-				
-				<h3>Ville</h3>
-				<p>Tähän arviosi</p>
-				<p>Arvosanaehdotus:</p>
-				
-			</article>
+			<h2>Itsearvio</h2>
+			
+			<h3>Miska</h3>
+			<p>Harjoitustyö oli minulle vähän liian vaativa, koska en muistanut melkein yhtään miten Reactia ja tietokantoja käytetään. Harjoitustyötä tehdessä kuitenkin opin, miten foorumisivu tehdään alusta loppuun.</p>
+			<p>Arvosanaehdotus: 2</p>
+			
+			<h3>Ville</h3>
+			<p>Tällä harjoitustyöllä oli potentiaalia paljon parempaan, mutta ajankäytön epäoptimaalisuuden vuoksi siihen ei aivan ylletty. Minun ja Miskan välillä oleva taitorako teki yhteistyöstä vaikeaa ja lähinnä yksisuuntaista ohjaamista. Eniten syytän kuitenkin epäonnistumisista itseäni, sillä olisin ehkä voinut uhrata enemmän omasta ajastani työn eteen.</p>
+			<p>Onnistumisiakin kuitenkin oli. Vaikka työ ei ole järin monipuolinen, sain siitä paljon rutiininomaista kokemusta web-ohjelmoinnin nykypäivän tärkeimpiin tekniikoihin.</p>
+			<p>Arvosanaehdotus: 4</p>
 		</section>
 	</div>
 </body>

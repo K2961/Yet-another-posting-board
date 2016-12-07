@@ -24,11 +24,11 @@ class Database
 			return array("result" => "banned");
 		}
 
-		$query = <<<SQL
+		$sql = <<<SQL
 		INSERT INTO Message(TopicId, UserId, Text, Posted)
 		VALUES (:topicId, :userId, :text, NOW());
 SQL;
-		$statement = $this->pdo->prepare($query);
+		$statement = $this->pdo->prepare($sql);
 		$statement->bindValue(":topicId", $topicId, PDO::PARAM_INT);
 		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
 		$statement->bindValue(":text", $text, PDO::PARAM_STR);
@@ -45,12 +45,12 @@ SQL;
 		else if ($this->isUserOwnerOfMessage($userId, $messageId)
 				|| $this->isUserModeratorOfMessage($userId, $messageId))
 		{
-			$query = <<<SQL
+			$sql = <<<SQL
 			UPDATE Message
 			SET Text = :text
 			WHERE Id = :messageId;
 SQL;
-			$statement = $this->pdo->prepare($query);
+			$statement = $this->pdo->prepare($sql);
 			$statement->bindValue(":messageId", $messageId, PDO::PARAM_INT);
 			$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
 			$statement->bindValue(":text", $text, PDO::PARAM_STR);
@@ -69,12 +69,12 @@ SQL;
 		else if ($this->isUserOwnerOfMessage($userId, $messageId)
 				|| $this->isUserModeratorOfMessage($userId, $messageId))
 		{
-			$query = <<<SQL
+			$sql = <<<SQL
 			DELETE FROM Message 
 			WHERE Id = :messageId
 			AND UserId = :userId;
 SQL;
-			$statement = $this->pdo->prepare($query);
+			$statement = $this->pdo->prepare($sql);
 			$statement->bindValue(":messageId", $messageId, PDO::PARAM_INT);
 			$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
 			$statement->execute();
@@ -85,11 +85,11 @@ SQL;
 	
 	function getTopic($id)
 	{
-		$query = <<<SQL
+		$sql = <<<SQL
 		SELECT * FROM Topic 
 		WHERE Id = :id;
 SQL;
-		$statement = $this->pdo->prepare($query);
+		$statement = $this->pdo->prepare($sql);
 		$statement->bindValue(":id", $id, PDO::PARAM_INT);
 		$statement->execute();
 
@@ -139,11 +139,11 @@ SQL;
 			return array("result" => "banned");
 		}
 
-		$query = <<<SQL
+		$sql = <<<SQL
 		INSERT INTO Topic(UserId, ForumId, Title, Posted)
 		VALUES (:userId, :forumId, :title, NOW());
 SQL;
-		$statement = $this->pdo->prepare($query);
+		$statement = $this->pdo->prepare($sql);
 		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
 		$statement->bindValue(":forumId", $forumId, PDO::PARAM_INT);
 		$statement->bindValue(":title", $title, PDO::PARAM_STR);
@@ -160,19 +160,19 @@ SQL;
 		if ($this->isUserOwnerOfTopic($userId, $id)
 		   || $this->isUserModeratorOftopic($userId, $id))
 		{
-			$query = <<<SQL
+			$sql = <<<SQL
 			DELETE FROM Message
 			WHERE TopicId = :id;
 SQL;
-			$statement = $this->pdo->prepare($query);
+			$statement = $this->pdo->prepare($sql);
 			$statement->bindValue(":id", $id, PDO::PARAM_INT);
 			$statement->execute();
 
-			$query = <<<SQL
+			$sql = <<<SQL
 			DELETE FROM Topic
 			WHERE Id = :id;
 SQL;
-			$statement = $this->pdo->prepare($query);
+			$statement = $this->pdo->prepare($sql);
 			$statement->bindValue(":id", $id, PDO::PARAM_INT);
 			$statement->execute();
 			
@@ -185,12 +185,12 @@ SQL;
 	{
 		$messages = array();
 
-		$query = <<<SQL
+		$sql = <<<SQL
 		SELECT * FROM Message
 		WHERE TopicId = :topicId
 		ORDER BY Posted DESC;
 SQL;
-		$statement = $this->pdo->prepare($query);
+		$statement = $this->pdo->prepare($sql);
 		$statement->bindValue(":topicId", $topicId, PDO::PARAM_STR);
 		$statement->execute();
 
@@ -281,11 +281,11 @@ SQL;
 		{
 			$passwordHash = $this->passwordLib->createPasswordHash($password,  '$2a$', array('cost' => 12));
 
-			$query = <<<SQL
+			$sql = <<<SQL
 			INSERT INTO User(Name, Password, AvatarUrl, Joined)
 			VALUES (:name, :password, :avatarUrl, NOW());
 SQL;
-			$statement = $this->pdo->prepare($query);
+			$statement = $this->pdo->prepare($sql);
 			$statement->bindValue(":name", $name, PDO::PARAM_STR);
 			$statement->bindValue(":password", $passwordHash, PDO::PARAM_STR);
 			$statement->bindValue(":avatarUrl", $avatarUrl, PDO::PARAM_STR);
@@ -351,11 +351,11 @@ SQL;
 	
 	function authenticateUser($name, $password)
 	{
-		$query = <<<SQL
+		$sql = <<<SQL
 		SELECT * FROM User
 		WHERE Name=:name;
 SQL;
-		$statement = $this->pdo->prepare($query);
+		$statement = $this->pdo->prepare($sql);
 		$statement->bindValue(":name", $name, PDO::PARAM_STR);
 		$statement->execute();
 
