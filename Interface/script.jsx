@@ -804,19 +804,8 @@ var Page = React.createClass({
 				console.error("Page.componentDidMount: ", status, error.toString());
 			}
 		});
-		$.ajax({
-			url: "Action/GetTopics.php",
-			dataType: "json",
-			cache: false,
-			success: function(data) {
-
-			}.bind(this),
-			error: function(xhr, status, error) {
-				console.error("Page.componentDidMount: ", status, error.toString());
-			}
-		});
 	},
-
+	
 	render: function() {
 		"use strict";
 		return (
