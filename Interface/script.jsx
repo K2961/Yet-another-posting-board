@@ -519,20 +519,21 @@ var LoginPopup = React.createClass({
 		this.props.cancel();
 	},
 
-	handleLogin: function() {
+	handleLogin: function(event) {
 		"use strict";
+		event.preventDefault();
 		this.props.send(this.refs.username.value, this.refs.password.value);
 	},
 
 	render: function() {
 		"use strict";
 		return (
-			<div className="loginPopup">
+			<form className="loginPopup" onSubmit={this.handleLogin}>
 				<table>
 					<tbody>
 						<tr>
 							<td>Username</td>
-							<td><input ref="username" type="text"></input></td>
+							<td><input ref="username" type="text" autoFocus="true"></input></td>
 						</tr>
 						<tr>
 							<td>Password</td>
@@ -540,11 +541,11 @@ var LoginPopup = React.createClass({
 						</tr>
 					</tbody>
 				</table>
-				<button onClick={this.handleLogin}>Log in</button>
-				<button onClick={this.handleCancel}>Cancel</button>    
-			</div>
+				<button onClick={this.handleLogin} type="submit">Log in</button>
+				<button onClick={this.handleCancel}>Cancel</button>
+			</form>
 		);
-	} 
+	}
 });
 
 var RegisterPopup = React.createClass({
@@ -553,20 +554,21 @@ var RegisterPopup = React.createClass({
 		this.props.cancel();
 	},
 
-	handleRegister: function() {
+	handleRegister: function(event) {
 		"use strict";
+		event.preventDefault();
 		this.props.send(this.refs.username.value, this.refs.password.value);
 	},
 
 	render: function() {
 		"use strict";
 		return (
-			<div className="registerPopup">
+			<form className="registerPopup" onSubmit={this.handleLogin}>
 				<table>
 					<tbody>
 						<tr>
 							<td>Username</td>
-							<td><input ref="username" type="text"></input></td>
+							<td><input ref="username" type="text" autoFocus="true"></input></td>
 						</tr>
 						<tr>
 							<td>Password</td>
@@ -574,9 +576,9 @@ var RegisterPopup = React.createClass({
 						</tr>
 					</tbody>
 				</table>
-				<button onClick={this.handleRegister}>Register</button>
+				<button onClick={this.handleRegister} type="submit">Register</button>
 				<button onClick={this.handleCancel}>Cancel</button>    
-			</div>
+			</form>
 		);
 	} 
 });
@@ -591,7 +593,7 @@ var LoginBar = React.createClass({
 	},
 
 	login_onClick: function() { 
-		"use strict";       
+		"use strict";
 		this.setState({
 			isLoginVisible: ! this.state.isLoginVisible,
 			isRegisterVisible: false
