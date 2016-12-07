@@ -7,12 +7,12 @@ if ($name === "Admin") // Dirty hack, remove later.
 
 $password = $_POST["password"];
 $avatarUrl = "Test.png";
-$user = $database->addUser($name, $password, $avatarUrl);
+$result = $database->addUser($name, $password, $avatarUrl);
 if ($user !== null)
 {
     session_start();
-    $_SESSION["user"] = $user;
-    $response = json_encode($user);
+    $_SESSION["user"] = $result["user"];
+    $response = json_encode($result);
     header('Content-type: application/json');
     echo $response;
 	exit();

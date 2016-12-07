@@ -3,13 +3,13 @@ require_once("Database.class.php");
 $database = new Database();
 $name = $_POST["name"];
 $password = $_POST["password"];
-$user = $database->authenticateUser($name, $password);
-if ($user !== null)
+$result = $database->authenticateUser($name, $password);
+if ($result !== null)
 {
     session_start();
-    $_SESSION["user"] = $user;
+    $_SESSION["user"] = $result["user"];
 }
-$response = json_encode($user);
+$response = json_encode($result);
 header("Content-type: application/json");
 echo $response;
 exit();

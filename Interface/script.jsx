@@ -578,7 +578,7 @@ var LoginBar = React.createClass({
 			dataType: "json",
 			cache: false,
 			success: function(data) {
-				this.props.page.setUser(data);
+				this.props.page.setUser(data.user);
 			}.bind(this),
 			error: function(xhr, status, error) {
 				console.error("LoginBar.sendLogin: ", status, error.toString());
@@ -599,7 +599,7 @@ var LoginBar = React.createClass({
 			dataType: "json",
 			cache: false,
 			success: function(data) {
-				this.props.page.setUser(data);
+				this.props.page.setUser(data.user);
 			}.bind(this),
 			error: function(xhr, status, error) {
 				console.error("LoginBar.sendRegistration: ", status, error.toString());

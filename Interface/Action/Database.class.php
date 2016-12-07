@@ -351,7 +351,7 @@ SQL;
 				"bans" => $bans,
 				"privileges" => $privileges
 			);
-			return $user;
+			return array("user" => $user);
 		}
 		return array("result" => "failure");
 	}
