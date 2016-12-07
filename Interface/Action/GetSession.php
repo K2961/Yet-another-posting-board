@@ -5,7 +5,8 @@ $session = array();
 $user = array(
 	"id" => -1,
 	"name" => "",
-	"bans" => array()
+	"bans" => array(),
+	"privileges" => array()
 );
 if (isset($_SESSION["user"]))
 {
