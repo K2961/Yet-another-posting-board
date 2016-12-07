@@ -124,6 +124,9 @@ button{
 .loginButtons{
 	float: right;
 }
+.logoutButton{
+	margin-left: 1em;
+}
 .pageHeader{
     clear: both;
 	padding: 2em;

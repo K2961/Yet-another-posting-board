@@ -691,7 +691,7 @@ var LogoutBar = React.createClass({
 			<div className="loginBar">
 				<div className="loginButtons">
 					Logged in as: {this.props.page.state.user.name}
-					<button onClick={this.logout_onClick}>Log out</button>
+					<button className="logoutButton" onClick={this.logout_onClick}>Log out</button>
 				</div>
 			</div>
 		);
