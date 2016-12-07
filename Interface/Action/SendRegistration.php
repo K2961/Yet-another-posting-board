@@ -12,8 +12,8 @@ if (isset($result["user"]))
 {
     session_start();
     $_SESSION["user"] = $result["user"];
-    $response = json_encode($result);
-    header('Content-type: application/json');
-    echo $response;
-	exit();
 }
+$response = json_encode($result);
+header('Content-type: application/json');
+echo $response;
+exit();

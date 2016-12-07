@@ -277,19 +277,26 @@ SQL;
 	
 	function addUser($name, $password, $avatarUrl)
 	{	
-		$passwordHash = $this->passwordLib->createPasswordHash($password,  '$2a$', array('cost' => 12));
+		try 
+		{
+			$passwordHash = $this->passwordLib->createPasswordHash($password,  '$2a$', array('cost' => 12));
 
-		$query = <<<SQL
-		INSERT INTO User(Name, Password, AvatarUrl, Joined)
-		VALUES (:name, :password, :avatarUrl, NOW());
+			$query = <<<SQL
+			INSERT INTO User(Name, Password, AvatarUrl, Joined)
+			VALUES (:name, :password, :avatarUrl, NOW());
 SQL;
-		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(":name", $name, PDO::PARAM_STR);
-		$statement->bindValue(":password", $passwordHash, PDO::PARAM_STR);
-		$statement->bindValue(":avatarUrl", $avatarUrl, PDO::PARAM_STR);
-		$statement->execute();
-
-		return $this->authenticateUser($name, $password);
+			$statement = $this->pdo->prepare($query);
+			$statement->bindValue(":name", $name, PDO::PARAM_STR);
+			$statement->bindValue(":password", $passwordHash, PDO::PARAM_STR);
+			$statement->bindValue(":avatarUrl", $avatarUrl, PDO::PARAM_STR);
+			$statement->execute();
+			return $this->authenticateUser($name, $password);
+		}
+		catch (PDOException $exception)
+		{
+			
+		}
+		return array("result" => "failure");
 	}
 	
 	function banUser($targetUserId, $forumId, $moderatorUserId)
@@ -297,7 +304,7 @@ SQL;
 		if ($this->isUserModeratorOfForum($moderatorUserId, $forumId))
 		{
 			$sql = <<<SQL
-			REPLACE INTO Ban(UserId, ForumId, Expires)
+			INSERT INTO Ban(UserId, ForumId, Expires)
 			VALUES (:targetUserId, :forumId, DATE_ADD(NOW(), INTERVAL 7 DAY));
 SQL;
 			$statement = $this->pdo->prepare($sql);
@@ -407,12 +414,12 @@ SQL;
 		
 	function deleteAll()
 	{
-		$this->pdo->query("DELETE FROM Moderator;");
-		$this->pdo->query("DELETE FROM Ban;");
-		$this->pdo->query("DELETE FROM Message;");
-		$this->pdo->query("DELETE FROM Topic;");
-		$this->pdo->query("DELETE FROM Forum;");
-		$this->pdo->query("DELETE FROM User;");
+		$this->pdo->query("TRUNCATE TABLE Moderator;");
+		$this->pdo->query("TRUNCATE TABLE Ban;");
+		$this->pdo->query("TRUNCATE TABLE Message;");
+		$this->pdo->query("TRUNCATE TABLE Topic;");
+		$this->pdo->query("TRUNCATE TABLE Forum;");
+		$this->pdo->query("TRUNCATE TABLE User;");
 	}
 	
 	function isUserOwnerOfMessage($userId, $messageId)

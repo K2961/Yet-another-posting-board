@@ -8,4 +8,4 @@ $root = $database->addForum("Root");
 
 $admin = $database->addUser("Admin", "INSERTPASSWORDHERE", "Test.png");
 
-$database->addModerator($admin["id"], $root["id"]);
+$database->addModerator($admin["user"]["id"], $root["id"]);
