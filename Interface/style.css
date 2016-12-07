@@ -45,6 +45,13 @@
 	max-width: 99%;
 	height: 10em;
 }
+.bannedStatus{
+	color: darkred;
+}
+.moderatorStatus{
+	color: green;
+}
+
 .topicList th, td{
 	border: 1px solid black;
 	padding: 0.5em;

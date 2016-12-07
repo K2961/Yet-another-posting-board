@@ -57,7 +57,23 @@ var Message = React.createClass({
 			cache: false,
 			success: topic.getMessages,
 			error: function(xhr, status, error) {
-				console.error("Message.handleDelete: ", status, error.toString());
+				console.error("Message.handleBan: ", status, error.toString());
+			}
+		});
+	},
+	
+	handleUnban: function() {
+		"use strict";
+		var topic = this.getTopic();
+		$.ajax({
+			url: "Action/UnbanUser.php",
+			method: "post",
+			data: {id: this.props.userId},
+			dataType: "text",
+			cache: false,
+			success: topic.getMessages,
+			error: function(xhr, status, error) {
+				console.error("Message.handleUnban: ", status, error.toString());
 			}
 		});
 	},
@@ -72,16 +88,37 @@ var Message = React.createClass({
 		return this.props.userName === page.state.user.name;
 	},
 	
+	isBanButtonVisible: function() {
+		"use strict";
+		if (this.props.userStatus === "banned")
+			return false;
+		return this.getPage().isUserModerator();
+	},
+	
+	isUnbanButtonVisible: function() {
+		"use strict";
+		if (this.props.userStatus !== "banned")
+			return false;
+		return this.getPage().isUserModerator();
+	},
+	
 	getTopic: function() {
+		"use strict";
 		return this.props.container.props.topic;
 	},
 	
 	getPage: function() {
+		"use strict";
 		return this.getTopic().props.page;
 	},
 	
 	render: function () {
 		"use strict";
+		var userStatus = null;
+		if (this.props.userStatus === "banned")
+			userStatus = <li className="bannedStatus">(Banned)</li>;
+		else if (this.props.userStatus === "moderator")
+			userStatus = <li className="moderatorStatus">(Moderator)</li>;
 		return (
 			<div className="message">
 				<div className="messageLeft">
@@ -91,11 +128,13 @@ var Message = React.createClass({
 					<div className="messageBar">
 						<ul className="messageInfo">
 							<li>{this.props.userName}</li>
-							<li>{ this.props.posted }</li>
+							{userStatus}
+							<li>{this.props.posted}</li>
 						</ul>
 						{ this.areButtonsVisible() ?
 							<div className="messageButtons">
-								{this.getPage().isUserModerator() ? <button onClick={this.handleBan}>Ban</button> : null}
+								{this.isBanButtonVisible() ? <button onClick={this.handleBan}>Ban</button> : null}
+								{this.isUnbanButtonVisible() ? <button onClick={this.handleUnban}>Unban</button> : null}
 								{! this.state.isEditorVisible ? <button onClick={this.handleEdit}>Edit</button> : null}
 								{this.state.isEditorVisible ? <button onClick={this.handleSave}>Save</button> : null}
 								<button onClick={this.handleDelete}>Delete</button>
@@ -122,7 +161,7 @@ var MessageContainer = React.createClass({
 			key++;
 			return (
 				<Message key={key} container={container} id={value.id} avatar={value.avatar} 
-					userId={value.userId} userName={value.userName} text={value.text} posted={value.posted}/>
+					userId={value.userId} userName={value.userName} userStatus={value.userStatus} text={value.text} posted={value.posted}/>
 			);
 		});
 
