@@ -583,6 +583,35 @@ var RegisterPopup = React.createClass({
 	} 
 });
 
+var ProfilePopup = React.createClass({
+	handleAvatarChange: function(event) {
+		"use strict";
+		$.ajax({
+			url: "Action/ChangeAvatar.php",
+			method: "post",
+			data: {avatarUrl: this.refs.avatarUrl.value},
+			dataType: "json",
+			cache: false,
+			success: function(data) {
+				
+			}.bind(this),
+			error: function(xhr, status, error) {
+				console.error("ProfilePopup.handleAvatarChange: ", status, error.toString());
+			}
+		});
+	},
+	
+	render: function() {
+		"use strict";
+		return (
+			<div className="profilePopup">
+				<input ref="avatarUrl" type="text" autoFocus="true" placeholder="Enter avatar URL here..."></input>
+				<button onClick={this.handleAvatarChange}>Change Avatar</button>
+			</div>
+		);
+	}
+});
+
 var LoginBar = React.createClass({
 	getInitialState: function() {
 		"use strict";
@@ -668,6 +697,24 @@ var LoginBar = React.createClass({
 });
 
 var LogoutBar = React.createClass({
+	getInitialState: function() {
+		"use strict"
+		return {
+			isProfileVisible: false
+		};
+	},
+	
+	setProfileVisible: function(isProfileVisible) {
+		var state = this.state;
+		state.isProfileVisible = isProfileVisible;
+		this.setState(state);
+	},
+	
+	profile_onClick: function() {
+		"use strict";
+		this.setProfileVisible(!this.state.isProfileVisible);
+	},
+	
 	logout_onClick: function() {
 		"use strict";
 		$.ajax({
@@ -691,7 +738,9 @@ var LogoutBar = React.createClass({
 			<div className="loginBar">
 				<div className="loginButtons">
 					Logged in as: {this.props.page.state.user.name}
+					<button className="profileButton" onClick={this.profile_onClick}>Profile</button>
 					<button className="logoutButton" onClick={this.logout_onClick}>Log out</button>
+					{this.state.isProfileVisible ? <ProfilePopup /> : null}
 				</div>
 			</div>
 		);

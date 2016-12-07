@@ -299,6 +299,20 @@ SQL;
 		return array("result" => "failure");
 	}
 	
+	function changeAvatar($userId, $avatarUrl)
+	{
+		$sql = <<<SQL
+		UPDATE User
+		SET AvatarUrl = :avatarUrl
+		WHERE Id = :userId;
+SQL;
+		$statement = $this->pdo->prepare($sql);
+		$statement->bindValue(":userId", $userId, PDO::PARAM_INT);
+		$statement->bindValue(":avatarUrl", $avatarUrl, PDO::PARAM_STR);
+		$statement->execute();
+		return array("result" => "success");
+	}
+	
 	function banUser($targetUserId, $forumId, $moderatorUserId)
 	{
 		if ($this->isUserModeratorOfForum($moderatorUserId, $forumId))
