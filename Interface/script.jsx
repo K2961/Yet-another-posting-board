@@ -90,6 +90,8 @@ var Message = React.createClass({
 	
 	isBanButtonVisible: function() {
 		"use strict";
+		if (this.props.userName === this.getPage().state.user.name)
+			return false;
 		if (this.props.userStatus === "banned")
 			return false;
 		return this.getPage().isUserModerator();
