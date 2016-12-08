@@ -59,7 +59,56 @@
 				</ul>
 			</ul>
 			
-			<p>Palvelinpuolella on "Action"-nimisessä kansiossa useisiin tiedostoihin jaettuja AJAX-toimintoja, jotka kaikki käyttävät yhtä yhteistä PHP-luokkaa nimeltä Database.</p>
+			<p>Palvelinpuolella on "Action"-nimisessä kansiossa useisiin tiedostoihin jaettuja AJAX-toimintoja, jotka kaikki käyttävät yhtä yhteistä PHP-luokkaa nimeltä Database. Tietokanta käyttää seuraavia tauluja, joissa on seuraavat kentät: </p>
+			<ul>
+				<li>Forum</li>
+				<ul>
+					<li>Id (int)</li>
+					<li>Title (varchar(64))</li>
+					<li>Created (datetime)</li>
+				</ul>
+				
+				<li>Topic</li>
+				<ul>
+					<li>Id (int)</li>
+					<li>UserId (int)</li>
+					<li>ForumId (int)</li>
+					<li>Title (varchar(255)</li>
+					<li>Posted (datetime)</li>
+				</ul>
+				
+				<li>Message</li>
+				<ul>
+					<li>Id (int)</li>
+					<li>TopicId (int)</li>
+					<li>UserId (int)</li>
+					<li>Text (text)</li>
+					<li>Posted (datetime)</li>
+				</ul>
+				
+				<li>User</li>
+				<ul>
+					<li>Id (int)</li>
+					<li>Name (varchar(64)</li>
+					<li>Password (varchar(64)</li>
+					<li>AvatarUrl (varchar(255)</li>
+					<li>Joined (datetime)</li>
+				</ul>
+				
+				<li>Moderator</li>
+				<ul>
+					<li>UserId (int)</li>
+					<li>ForumId (int)</li>
+				</ul>
+				
+				<li>Ban</li>
+				<ul>
+					<li>Id (int)</li>
+					<li>UserId (int)</li>
+					<li>ForumId (int)</li>
+					<li>Expires (datetime)</li>
+				</ul>
+			</ul>
 		</section>
 
 		<section>
